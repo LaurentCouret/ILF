@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Institut Labélisation Français</title>
+
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='fasto/images/favicon.png')}}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='fasto/vendor/bootstrap-select/dist/css/bootstrap-select.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fasto/css/style.css')}}">
+
+    <script src="https://unpkg.com/feather-icons" defer></script>
+    
+    <style>
+        /* CSS personnalisé pour l'autocomplétion */
+        .ui-autocomplete {
+            position: absolute;
+            z-index: 1000;
+            cursor: default;
+            padding: 0;
+            margin-top: 2px;
+            list-style: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .ui-autocomplete .ui-menu-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ui-autocomplete .ui-menu-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .ui-autocomplete .ui-state-focus {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .ui-helper-hidden-accessible {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            padding-right: 40px; /* Espace pour l'icône */
+        }
+
+        .password-icon {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        .password-icon i {
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body class="vh-100">
+    <div class="authincation h-100">
+        <div class="container h-100">
+            <div class="row justify-content-center h-100 align-items-center">
+                <div class="col-md-6">
+                    <div class="authincation-content">
+                        <div class="row no-gutters">
+                            <div class="col-xl-12">
+                                <div class="auth-form">
+                                    <div class="text-center mb-3">
+                                        <img src="{{ url_for('static', filename='fasto/images/logo-full.png')}}" alt="">
+                                    </div>
+                                    <h4 class="text-center mb-4">Inscrivez-vous à votre compte</h4>
+                                    
+                                    {% with messages = get_flashed_messages(with_categories=true) %}
+                                      {% if messages %}
+                                        <div class="container mt-3">
+                                          {% for category, message in messages %}
+                                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                              {{ message }}
+                                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                          {% endfor %}
+                                        </div>
+                                      {% endif %}
+                                    {% endwith %}
+                                    
+                                    <form action="/register-ecole" method="POST">
+                                        <div class="form-group">
+                                            <label class="mb-1"><strong>Nom</strong></label>
+                                            <input type="text" name="nom" class="form-control" placeholder="Nom" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="mb-1"><strong>Prénom</strong></label>
+                                            <input type="text" name="prenom" class="form-control" placeholder="Prénom" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="mb-1"><strong>Statut</strong></label>
+                                            <input type="text" name="status" class="form-control" placeholder="Statut" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="mb-1"><strong>École</strong></label>
+                                            <input type="text" id="ecole" name="ecole" class="form-control" placeholder="École" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="mb-1"><strong>Email</strong></label>
+                                            <input type="email" name="email" class="form-control" placeholder="Email" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="mb-1"><strong>Confirmez Email</strong></label>
+                                            <input type="email" name="confirm_email" class="form-control" placeholder="Confirmez Email" required>
+                                        </div>
+                                            <!-- Mot de passe -->
+                                        <div class="mb-3 password-container">
+                                            <label for="password" class="form-label">Mot de passe</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <div class="password-icon" id="toggle-password">
+                                                <i id="eye" data-feather="eye"></i>
+                                            </div>
+                                        </div>
+
+                                        <!-- Confirmation du mot de passe -->
+                                        <div class="mb-3 password-container">
+                                            <label for="confirm_password" class="form-label">Confirmer votre mot de passe</label>
+                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                            <div class="password-icon" id="toggle-confirm-password">
+                                                <i id="eye-confirm" data-feather="eye"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="mb-1"><strong>Téléphone</strong></label>
+                                            <input type="text" name="telephone" class="form-control" placeholder="Téléphone" required>
+                                        </div>
+                                        <div class="text-center mt-4">
+                                            <button type="submit" class="btn btn-primary btn-block">Inscription</button>
+                                        </div>
+                                    </form>
+                                    <div class="new-account mt-3">
+                                        <p>Déjà un compte? <a class="text-primary" href="{{ url_for('main.page_login') }}">Connexion</a></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='fasto/vendor/global/global.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='fasto/js/custom.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='fasto/js/deznav-init.js')}}"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function() {
+            $("#ecole").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "/autocomplete_schools",
+                        data: {
+                            query: request.term
+                        },
+                        success: function(data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#ecole").val(ui.item.label);
+                    return false;
+                }
+            }).autocomplete("instance")._renderItem = function(ul, item) {
+                var label = $("<div>").text(item.label);
+                return $("<li>")
+                    .append(label)
+                    .appendTo(ul);
+            };
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.querySelector("#toggle-password");
+            const passwordField = document.querySelector("#password");
+
+            const toggleConfirmPassword = document.querySelector("#toggle-confirm-password");
+            const confirmPasswordField = document.querySelector("#confirm_password");
+
+            // Pour le mot de passe
+            togglePassword.addEventListener("click", () => {
+                const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+                passwordField.setAttribute("type", type);
+
+                togglePassword.innerHTML = type === "password" ? '<i id="eye" data-feather="eye"></i>' : '<i id="eye" data-feather="eye-off"></i>';
+                
+                feather.replace(); // Remplacer les icônes
+            });
+
+            // Pour le champ de confirmation de mot de passe
+            toggleConfirmPassword.addEventListener("click", () => {
+                const type = confirmPasswordField.getAttribute("type") === "password" ? "text" : "password";
+                confirmPasswordField.setAttribute("type", type);
+
+                toggleConfirmPassword.innerHTML = type === "password" ? '<i id="eye-confirm" data-feather="eye"></i>' : '<i id="eye-confirm" data-feather="eye-off"></i>';
+                
+                feather.replace(); // Remplacer les icônes
+            });
+
+            feather.replace(); // Initialisation de Feather Icons
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        <!-- Key Stats Section -->
+        <div class="row">
+            <div class="col-xl-6 col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Inscriptions</h4>
+                        <ul class="list-unstyled">
+                            <li>Nombre total de formateurs: {{ total_formateurs }}</li>
+                            <li>Nombre total d'écoles: {{ total_ecoles }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gestion des formateurs -->
+        <div class="container mt-3">
+            <h4>Gestion des formateurs</h4>
+
+            <!-- Buttons to see the calendar and formateur list -->
+            <div class="mb-3 d-flex flex-column flex-lg-row">
+                <a href="{{ url_for('main.admin_calendar') }}" class="btn btn-primary mb-2 mb-lg-0 me-lg-3">Voir le calendrier des rendez-vous</a>
+                <a href="{{ url_for('main.view_formateurs') }}" class="btn btn-primary">Voir la liste des formateurs</a>
+            </div>
+
+            <div id="message-container"></div> <!-- Container for displaying messages -->
+
+            <!-- Responsive Table for Formateurs -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for formateur in formateurs %}
+                        <tr>
+                            <td>{{ formateur.nom }}</td>
+                            <td>{{ formateur.prenom }}</td>
+                            <td>{{ formateur.email }}</td>
+                            <td>{{ formateur.status }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('main.update_formateur_status') }}" class="form-status-update d-inline-block">
+                                    <input type="hidden" name="formateur_id" value="{{ formateur._id }}">
+                                    <button type="submit" name="new_status" value="Valider" class="btn btn-success mb-2 me-2">Valider</button>
+                                    <button type="submit" name="new_status" value="Suspendu" class="btn btn-warning mb-2 me-2">Suspendre</button>
+                                    <button type="submit" name="new_status" value="Rejeter" class="btn btn-danger mb-2">Rejeter</button>
+                                </form>
+
+                                <!-- Bouton pour générer un code unique -->
+                                <form method="POST" action="{{ url_for('main.admin_generate_code') }}" class="form-generate-code d-inline-block">
+                                    <input type="hidden" name="formateur_id" value="{{ formateur._id }}">
+                                    <button type="submit" class="btn btn-secondary">Générer le code</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_css %}
+<style>
+    /* Responsive table styling */
+    @media (max-width: 767px) {
+        table.table {
+            width: 100%;
+            display: block;
+            border: 0;
+        }
+
+        thead {
+            display: none;
+        }
+
+        tr {
+            display: block;
+            margin-bottom: 10px;
+            border: 1px solid #2c3e50;
+            border-radius: 5px;
+            background-color: #1b1e23;
+        }
+
+        td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #2c3e50;
+        }
+
+        td:last-child {
+            border-bottom: 0;
+        }
+
+        td:before {
+            content: attr(data-label);
+            flex: 1;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding-right: 10px;
+            color: #c7c7c7;
+        }
+
+        /* Adjust buttons in actions */
+        td.actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        td.actions button {
+            width: 100%;
+        }
+    }
+
+    /* Custom styles for the table */
+    .table-hover tbody tr:hover {
+        background-color: #2c3e50;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .form-status-update {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .form-generate-code {
+        display: inline-block;
+    }
+
+    /* Message Container Styles */
+    #message-container {
+        margin-top: 10px;
+    }
+
+    .alert {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block additional_js %}
+<script defer>
+    jQuery(document).ready(function(){
+        setTimeout(function() {
+            dezSettingsOptions.version = 'dark';
+            new dezSettings(dezSettingsOptions);
+        },1500);
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const generateCodeForms = document.querySelectorAll('.form-generate-code');
+
+        generateCodeForms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const formData = new FormData(this);
+                const url = this.action;
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const messageContainer = document.getElementById('message-container');
+                    if (data.success) {
+                        messageContainer.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+                    } else {
+                        messageContainer.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
+                    }
+
+                    // Effacer le message après 3 secondes
+                    setTimeout(() => {
+                        messageContainer.innerHTML = '';
+                    }, 3000);
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    const messageContainer = document.getElementById('message-container');
+                    messageContainer.innerHTML = `<div class="alert alert-danger">Une erreur est survenue. Veuillez réessayer.</div>`;
+                    
+                    setTimeout(() => {
+                        messageContainer.innerHTML = '';
+                    }, 3000);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+        <link rel="icon" type="image/png" href="../../../static/fasto/images/img/Favicon.png" />
+        <link rel="stylesheet" href="../../../static/fasto/css/styleAccueil.css">
+        <title>Notre Histoire</title>
+        <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
+        <script src="../../../static/fasto/js/script.js" defer></script>
+      </head>
+<body>
+    <!-- PARTIE HEADER  -->
+  <!-- HEADER SECTION -->
+  <header>
+    <nav class="navbar">
+      <a href="{{ url_for('main.home') }}"><img src="../../../static/fasto/images/img/logo.png" alt="Logo" class="logo"></a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('main.notrehistoire') }}">Notre Histoire</a></li>
+        <li><a href="{{ url_for('main.partenariat') }}">Partenariat</a></li>
+        <li><a href="{{ url_for('main.nousrejoindre') }}">Nous Rejoindre</a></li>
+        <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+        <li><a href="{{ url_for('main.page_login') }}" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
+        <li><a href="{{ url_for('main.page_register_choice') }}" class="btn-primary"><i class="fas fa-user-plus"></i> Inscription</a></li>
+      </ul>
+      <div class="navbar-right"></div>
+      <img class="burger" src="../../../static/fasto/images/img/burger-blanc.png">
+    </nav>
+    <br>
+    <div class="line"></div>
+  </header>
+
+
+ <!-- PARTIE SECTION  -->
+<main>
+  
+<section class="typingCenter">
+    <h1 class="typing">Des experts pour vous guider vers l'excellence déontologique</h1>
+</section>
+<section class="timeline-section">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <h2>Qui sommes-nous ?</h2>
+          <p>Nous sommes trois formateurs venant de parcours professionnels différents, unis par une passion commune pour l'excellence déontologique. En échangeant sur nos expériences, nous avons réalisé l'importance des soft skills pour les prestataires externes en formation. Ces compétences sont essentielles à la réussite d’une mission.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <h2>Comment l'idée est née ?</h2>
+          <p>Nous avons constaté des manquements non seulement dans les soft skills mais aussi dans le respect des bonnes pratiques déontologiques au sein du secteur. C'est ainsi qu'est née notre volonté d'agir.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <h2>Les constats que nous avons faits</h2>
+          <p>Les pratiques déontologiques en formation sont souvent négligées. En tant que formateurs, nous avons observé qu’il était difficile de distinguer les professionnels qui respectent ces règles de ceux qui ne le font pas.</p>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <h2>Pourquoi un label ?</h2>
+          <p>Pour combler ce manque, nous avons créé le Label des Formateurs Professionnels qui met en avant la qualité, l’éthique, et l'engagement des formateurs. Notre label garantit des pratiques exemplaires et différencie les formateurs qui respectent les règles professionnelles de ceux qui ne le font pas.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+  <!-- PARTIE FOOTER -->
+  
+<footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section about">
+        <h2 class="logo-text">Institut de Labélisation</h2>
+        <p id="textfooter">
+          L'Institut est dédié à la labélisation des prestataires externes, assurant des standards de
+          qualité élevés.
+        </p>
+        <div class="contact">
+          <span><i class="fas fa-map-marker-alt"></i> Paris, France</span>
+          <span><i class="fas fa-envelope"></i> contact@institut-labelisation.fr</span>
+        </div>
+      </div>
+
+      <div class="footer-section links">
+        <h3>Liens Utiles</h3>
+        <ul>
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">CGU</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section social">
+        <h3>Suivez-nous</h3>
+        <div class="social-icons">
+          <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2024 Institut de Labélisation | Tous droits réservés.
+    </div>
+</footer>
+  
+
+</body>
+</html>

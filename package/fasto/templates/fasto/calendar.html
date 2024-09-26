@@ -1,0 +1,285 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block additional_css %}
+<style>
+    /* Style pour la grille du calendrier */
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); /* 6 colonnes pour les jours de lundi à samedi */
+        grid-gap: 10px;
+    }
+
+    /* Style pour chaque jour du calendrier */
+    .calendar-day {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* En-tête du jour dans le calendrier */
+    .calendar-day-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        color: #333;
+    }
+
+    /* Style pour les créneaux horaires disponibles */
+    .available-slot {
+        background-color: #e0f7e0;
+        border-radius: 5px;
+        padding: 8px;
+        margin: 5px 0;
+        cursor: pointer;
+        text-align: center;
+        width: 80%;
+        font-size: 0.9em;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Changement de couleur au survol des créneaux disponibles */
+    .available-slot:hover {
+        background-color: #d0f0d0;
+    }
+
+    /* Style pour la navigation du calendrier */
+    .calendar-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    /* Style pour les boutons de navigation du calendrier */
+    .calendar-navigation button {
+        background-color: #c82333;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    /* Changement de couleur au survol des boutons de navigation */
+    .calendar-navigation button:hover {
+        background-color: #a71d2a;
+    }
+
+    /* Style pour mobile */
+    @media (max-width: 768px) {
+        .calendar {
+            grid-template-columns: repeat(2, 1fr); /* 2 colonnes pour les jours sur mobile */
+        }
+
+        .calendar-navigation {
+            flex-direction: column;
+        }
+
+        .calendar-navigation button {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .calendar {
+            grid-template-columns: 1fr; /* 1 colonne pour les jours sur très petits écrans */
+        }
+
+        .available-slot {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container mt-3">
+        <h2>Choisissez une date et un créneau horaire</h2>
+        <p>Les rendez-vous sont disponibles du lundi au vendredi de 8h à 19h, avec des créneaux de deux heures. Pas de rendez-vous le mardi matin et le jeudi matin. Ouverture le samedi matin de 8h30 à 12h30.</p>
+        
+        <div class="calendar-navigation">
+            <button id="prevWeek">Semaine précédente</button>
+            <button id="nextWeek">Semaine suivante</button>
+        </div>
+        
+        <div id="calendar" class="calendar"></div>
+    </div>
+</div>
+
+<!-- Modal pour planifier un rendez-vous -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="scheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scheduleModalLabel">Confirmer votre rendez-vous</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vous avez sélectionné le créneau suivant :</p>
+                <p id="selectedSlot"></p>
+                <p>Un paiement de <strong>250€</strong> est requis pour verrouiller ce créneau horaire.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="confirmAppointment">Confirmer et Payer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block additional_js %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+        var stripe = Stripe('{{ stripe_public_key }}');
+        var startDate = new Date();
+        startDate.setDate(startDate.getDate() - startDate.getDay() + 1); // Commencer la semaine le lundi
+        var currentWeekStart = new Date(startDate);
+
+        renderCalendar(currentWeekStart);
+
+        document.getElementById('prevWeek').addEventListener('click', function() {
+            currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+            renderCalendar(currentWeekStart);
+        });
+
+        document.getElementById('nextWeek').addEventListener('click', function() {
+            currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+            renderCalendar(currentWeekStart);
+        });
+
+        document.getElementById('confirmAppointment').addEventListener('click', function() {
+            var selectedSlot = document.getElementById('selectedSlot').innerText;
+            var [date, time] = selectedSlot.split(' à ');
+
+            // Créer la session de paiement avec Stripe
+            fetch('/create_checkout_session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ date: date.trim(), time: time.trim() })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.id) {
+                    // Rediriger l'utilisateur vers la page de paiement Stripe
+                    stripe.redirectToCheckout({ sessionId: data.id });
+                } else {
+                    alert('Erreur lors de la création de la session de paiement.');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la création de la session de paiement.');
+            });
+        });
+    });
+
+    function renderCalendar(weekStart) {
+        var calendar = document.getElementById('calendar');
+        calendar.innerHTML = ''; // Clear existing content
+
+        for (var i = 0; i < 6; i++) { // Seuls 6 jours (lundi à samedi)
+            (function() {
+                var date = new Date(weekStart);
+                date.setDate(weekStart.getDate() + i);
+
+                var dayElement = document.createElement('div');
+                dayElement.classList.add('calendar-day');
+
+                var dayHeader = document.createElement('div');
+                dayHeader.classList.add('calendar-day-header');
+                dayHeader.innerText = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+                dayElement.appendChild(dayHeader);
+
+                var day = date.getDay();
+                var slots = generateTimesForDay(day, date);
+
+                slots.forEach(function(slot) {
+                    var timeElement = document.createElement('div');
+                    if (slot.booked) {
+                        timeElement.classList.add('unavailable-slot');
+                        timeElement.innerText = slot.time + " (Pris)";
+                    } else {
+                        timeElement.classList.add('available-slot');
+                        timeElement.innerText = slot.time;
+                        timeElement.addEventListener('click', function() {
+                            var selectedDate = date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+                            document.getElementById('selectedSlot').innerText = `${selectedDate} à ${slot.time}`;
+                            
+                            var scheduleModal = new bootstrap.Modal(document.getElementById('scheduleModal'), {
+                                keyboard: false
+                            });
+                            scheduleModal.show();
+                        });
+                    }
+                    dayElement.appendChild(timeElement);
+                });
+
+                calendar.appendChild(dayElement);
+            })();
+        }
+    }
+
+    function generateTimesForDay(day, date) {
+        var times = [];
+        var slots = [];
+
+        // Définir les créneaux horaires en fonction du jour de la semaine
+        if (day === 6) { // Samedi
+            times = ['08:30', '10:30', '12:30'];
+        } else if (day === 2 || day === 4) { // Mardi et jeudi matin bloqués
+            times = ['13:00', '15:00', '17:00'];
+        } else if (day !== 0) { // Autres jours de la semaine (lundi, mercredi, vendredi)
+            times = ['08:00', '10:00', '13:00', '15:00', '17:00'];
+        }
+
+        // Itération sur chaque créneau horaire pour vérifier s'il est réservé
+        times.forEach(function(time) {
+            var slotDateTime = new Date(date);
+            var [hours, minutes] = time.split(':');
+            slotDateTime.setHours(hours, minutes);
+
+            var isBooked = checkIfBooked(slotDateTime);  // Vérifie si le créneau est réservé
+
+            slots.push({
+                time: time,
+                booked: isBooked
+            });
+        });
+
+        return slots;
+    }
+
+    function checkIfBooked(slotDateTime) {
+        var booked = false;
+        var xhr = new XMLHttpRequest();
+        var isoDate = slotDateTime.toISOString().split('T')[0];  // Format date as 'YYYY-MM-DD'
+        var time = slotDateTime.toTimeString().split(' ')[0].substr(0, 5); // Extract time in 'HH:MM'
+
+        xhr.open("GET", `/check_slot_availability?date=${isoDate}&time=${time}`, false);
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                booked = response.booked;
+            }
+        };
+        xhr.send();
+
+        return booked;
+    }
+
+</script>
+{% endblock %}

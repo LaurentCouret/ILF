@@ -1,0 +1,202 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename= 'fasto/vendor/chartist/css/chartist.min.css')}}">
+<style>
+    /* Ajustement des styles pour le responsive */
+    .form-control {
+        margin-bottom: 10px;
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .card-title {
+            font-size: 1.2rem;
+        }
+
+        .table {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .card-title {
+            font-size: 1rem;
+        }
+
+        .table {
+            font-size: 0.8rem;
+        }
+
+        .form-control {
+            font-size: 0.9rem;
+            padding: 0.75rem;
+        }
+
+        .btn-primary {
+            font-size: 0.9rem;
+            padding: 0.75rem;
+        }
+
+        /* Styles pour les images de profil */
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="container-fluid">
+        <!-- Filtrer les Formateurs -->
+        <div class="row">
+            <div class="col-12">
+                <form id="filterForm">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <input type="text" id="nom_prenom" class="form-control" placeholder="Nom ou Prénom">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="secteur" class="form-control" placeholder="Secteur d'activité">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="region_habitation" class="form-control" placeholder="Région d'habitation">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="competences" class="form-control" placeholder="Compétences">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Filtrer</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Display Formateurs -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Liste des formateurs</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Nom</th>
+                                        <th>Prénom</th>
+                                        <th>Secteur d'activité</th>
+                                        <th>Compétences</th>
+                                        <th>Région d'habitation</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="formateurs-list">
+                                    {% for formateur in formateurs %}
+                                    {% if formateur.status == 'Valider' %}
+                                    <tr>
+                                        <td>
+                                            <img src="{{ formateur.photo_profil | default(url_for('static', filename='images/default-profile.png')) }}" alt="Profil" class="profile-img">
+                                        </td>
+                                        <td>{{ formateur.nom }}</td>
+                                        <td>{{ formateur.prenom }}</td>
+                                        <td>{{ formateur.secteur }}</td>
+                                        <td>
+                                            {% for competence in formateur.competences %}
+                                                {{ competence.value }}{% if not loop.last %}, {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td>{{ formateur.region_habitation }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Your existing content here -->
+        <!-- ... -->
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='fasto/vendor/chart.js/Chart.bundle.min.js')}}"></script>
+<script src="{{ url_for('static', filename='fasto/vendor/peity/jquery.peity.min.js')}}"></script>
+<script src="{{ url_for('static', filename='fasto/vendor/apexchart/apexchart.js')}}"></script>
+<script src="{{ url_for('static', filename='fasto/js/dashboard/dashboard-1.js')}}"></script>
+
+<script>
+$(document).ready(function() {
+    $('#filterForm').on('submit', function(e) {
+        e.preventDefault();
+        var nom_prenom = $('#nom_prenom').val();
+        var secteur = $('#secteur').val();
+        var region_habitation = $('#region_habitation').val();
+        var competences = $('#competences').val().split(',').map(item => item.trim());
+
+        $.ajax({
+            url: "{{ url_for('main.filter_formateurs') }}",
+            type: 'GET',
+            data: {
+                nom_prenom: nom_prenom,
+                secteur: secteur,
+                region_habitation: region_habitation,
+                competences: competences,
+                status: 'Valider'  // Filtrer par statut
+            },
+            success: function(data) {
+                console.log('Data received:', data);  // Ajouté pour le débogage
+                $('#formateurs-list').empty();
+                if (data.length > 0) {
+                    data.forEach(function(formateur) {
+                        if (formateur.status === 'Valider') {
+                            var profileImg = formateur.photo_profil 
+                                ? 'data:image/jpeg;base64,' + formateur.photo_profil 
+                                : '{{ url_for("static", filename="images/default-profile.png") }}';
+                            
+                            $('#formateurs-list').append(
+                                '<tr>' +
+                                '<td><img src="' + profileImg + '" alt="Profil" class="profile-img"></td>' +
+                                '<td>' + formateur.nom + '</td>' +
+                                '<td>' + formateur.prenom + '</td>' +
+                                '<td>' + formateur.secteur + '</td>' +
+                                '<td>' + (formateur.competences || []).map(c => c.value).join(', ') + '</td>' +
+                                '<td>' + formateur.region_habitation + '</td>' +
+                                '</tr>'
+                            );
+                        }
+                    });
+                } else {
+                    $('#formateurs-list').append('<tr><td colspan="6" class="text-center">Aucun formateur trouvé.</td></tr>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Erreur de filtrage:', error);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

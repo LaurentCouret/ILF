@@ -1,0 +1,25 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card mt-5">
+                    <div class="card-body text-center">
+                        <h2 class="card-title text-success">Paiement Réussi</h2>
+                        <p class="card-text">Merci pour votre paiement. Votre rendez-vous a été confirmé.</p>
+                        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Retour à la page d'accueil</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}

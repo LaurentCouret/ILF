@@ -1,0 +1,193 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='fasto/vendor/chartist/css/chartist.min.css')}}">
+<style>
+    /* Ajustement de la largeur de la modale */
+    #charteModal .modal-dialog {
+        max-width: 100%; /* Largeur pleine sur mobile */
+        margin: 10px; /* Réduction des marges sur mobile */
+    }
+
+    /* Ajustement de la largeur du contenu de la modale */
+    #charteModal .modal-content {
+        padding: 15px; /* Réduction du padding pour un meilleur affichage sur mobile */
+    }
+
+    /* Ajustement des boutons pour qu'ils prennent toute la largeur sur mobile */
+    .btn-block {
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <div class="col-12 col-md-4 mb-2">
+                {% if can_schedule %}
+                    <a href="{{ url_for('main.calendar') }}" class="btn btn-secondary btn-block" title="Prenez rendez-vous avec notre équipe pour un entretien.">
+                        Prendre rendez-vous
+                    </a>
+                {% else %}
+                    <button class="btn btn-secondary btn-block" disabled title="Vous avez déjà un rendez-vous prévu.">
+                        Prendre rendez-vous
+                    </button>
+                {% endif %}
+            </div>
+            
+            <div class="col-12 col-md-4 mb-2">
+                <a href="{{ url_for('main.profile') }}" class="btn btn-secondary btn-block" title="Accédez à votre profil utilisateur pour mettre à jour vos informations.">
+                    Accéder au profil
+                </a>
+            </div>
+        </div>
+
+        <!-- User Status Section -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <h4 class="text-center text-md-left">Statut de votre label :</h4>
+                {% if current_user.status == 'en attente' %}
+                    <div class="status-block status-en-attente text-center text-md-left">En attente</div>
+                {% elif current_user.status == 'Valider' %}
+                    <div class="status-block status-valide text-center text-md-left">Valider</div>
+                {% elif current_user.status == 'suspendu' %}
+                    <div class="status-block status-suspendu text-center text-md-left">Suspendu</div>
+                {% elif current_user.status == 'refusé' %}
+                    <div class="status-block status-refuse text-center text-md-left">Refusé</div>
+                {% else %}
+                    <div class="status-block status-inconnu text-center text-md-left">Inconnu</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Label Renewal Countdown -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <h4 class="text-center text-md-left">Renouvellement de votre label :</h4>
+                <div class="countdown-block text-center text-md-left">
+                    {% if current_user.status == 'Valider' %}
+                        Il reste {{ days_remaining }} jours avant le renouvellement de votre label.
+                    {% else %}
+                        Votre label n'est pas encore validé.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if current_user.status == 'Valider' and not current_user.charte_acceptee %}
+    <div class="modal fade" id="charteModal" tabindex="-1" aria-labelledby="charteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="charteModalLabel">Charte de Conformité</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Veuillez lire et accepter la charte pour maintenir votre label.</p>
+                    <h2>Charte de Conformité pour les Formateurs Labellisés</h2>
+    
+                    <h3>1. Pratiques Professionnelles et Environnement de Travail</h3>
+                    <ul>
+                        <li><strong>Habitudes de Travail :</strong> Adoptez des pratiques de travail efficaces et organisées.</li>
+                        <li><strong>Gestion du Temps :</strong> Priorisez vos tâches pour respecter les délais.</li>
+                        <li><strong>Environnement Positif :</strong> Maintenez un cadre de travail productif et favorable à l'apprentissage.</li>
+                        <li><strong>Amélioration Continue :</strong> Soyez proactif dans l'amélioration de votre environnement de travail.</li>
+                    </ul>
+
+                    <h3>2. Adaptation et Gestion des Imprévus</h3>
+                    <ul>
+                        <li><strong>Réaction aux Changements :</strong> Faites preuve de flexibilité face aux situations imprévues.</li>
+                        <li><strong>Gestion du Stress :</strong> Gérez le stress de manière constructive pour maintenir votre performance.</li>
+                        <li><strong>Prévention des Problèmes :</strong> Anticipez les défis et préparez des solutions en amont.</li>
+                    </ul>
+
+                    <h3>3. Préparation de la Formation</h3>
+                    <ul>
+                        <li><strong>Évaluation des Besoins :</strong> Identifiez les besoins des apprenants avant la formation.</li>
+                        <li><strong>Personnalisation :</strong> Adaptez vos contenus pédagogiques en fonction des besoins spécifiques des apprenants.</li>
+                        <li><strong>Efficacité :</strong> Évaluez et ajustez votre préparation pour garantir l'efficacité de la formation.</li>
+                    </ul>
+
+                    <h3>4. Gestion de Groupe et Résolution des Conflits</h3>
+                    <ul>
+                        <li><strong>Dynamique de Groupe :</strong> Créez un environnement d'apprentissage inclusif et collaboratif.</li>
+                        <li><strong>Résolution des Conflits :</strong> Intervenez rapidement pour résoudre les conflits et maintenir un climat serein.</li>
+                    </ul>
+
+                    <h3>5. Évaluation de l'Apprentissage</h3>
+                    <ul>
+                        <li><strong>Suivi des Compétences :</strong> Évaluez régulièrement l'acquisition des compétences par les apprenants.</li>
+                        <li><strong>Ajustement Pédagogique :</strong> Adaptez votre enseignement en fonction des retours et des besoins émergents.</li>
+                    </ul>
+
+                    <h3>6. Communication et Relations Professionnelles</h3>
+                    <ul>
+                        <li><strong>Suivi des Évolutions :</strong> Restez informé des tendances de votre domaine.</li>
+                        <li><strong>Communication Efficace :</strong> Adaptez votre communication en fonction de votre public cible pour maximiser l'impact.</li>
+                        <li><strong>Collaboration avec les Équipes Pédagogiques :</strong> Maintenez une communication fluide et constructive avec les équipes pédagogiques pour assurer une cohérence dans l'apprentissage.</li>
+                    </ul>
+
+                    <h3>7. Éthique Professionnelle</h3>
+                    <ul>
+                        <li><strong>Intégrité :</strong> Respectez les principes éthiques et agissez avec intégrité dans toutes vos interactions professionnelles.</li>
+                    </ul>
+
+                    <hr>
+
+                    <h3>Engagement</h3>
+                    <p>En acceptant cette charte, vous reconnaissez votre engagement à respecter ces principes. Le non-respect peut entraîner la révocation de votre label.</p>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="charteAccepted">
+                        <label class="form-check-label" for="charteAccepted">J'ai lu et j'accepte les termes de la charte.</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="acceptCharteBtn">Accepter</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!--**********************************
+    Content body end
+***********************************-->
+{% endblock %}
+
+{% block additional_js %}
+<script>
+    $(document).ready(function() {
+        $('#charteModal').modal('show');
+    });
+
+    $('#acceptCharteBtn').on('click', function() {
+        if ($('#charteAccepted').is(':checked')) {
+            $.post("{{ url_for('main.charte_conformite') }}", function() {
+                location.reload();
+            });
+        } else {
+            alert("Vous devez accepter la charte pour continuer.");
+        }
+    });
+</script>
+{% endblock %}

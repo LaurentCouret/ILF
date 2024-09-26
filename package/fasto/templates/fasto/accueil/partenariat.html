@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../../../static/fasto/images/img/Favicon.png" />
+  <link rel="stylesheet" href="../../../static/fasto/css/styleAccueil.css">
+  <title>Partenariat</title>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
+  <script src="../../../static/fasto/js/script.js" defer></script>
+</head>
+
+<body>
+
+  <!-- PARTIE HEADER  -->
+  <header>
+    <nav class="navbar">
+      <a href="{{ url_for('main.home') }}"><img src="../../../static/fasto/images/img/logo.png" alt="Logo" class="logo"></a>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('main.notrehistoire') }}">Notre Histoire</a></li>
+        <li><a href="{{ url_for('main.partenariat') }}">Partenariat</a></li>
+        <li><a href="{{ url_for('main.nousrejoindre') }}">Nous Rejoindre</a></li>
+        <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+        <li><a href="{{ url_for('main.page_login') }}" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
+        <li><a href="{{ url_for('main.page_register_choice') }}" class="btn-primary"><i class="fas fa-user-plus"></i> Inscription</a></li>
+      </ul>
+      <div class="navbar-right"></div>
+      <img class="burger" src="../../../static/fasto/images/img/burger-blanc.png">
+    </nav>
+    <br>
+    <div class="line"></div>
+  </header>
+
+
+  <!-- SECTION N°1 -->
+ <main>
+      <!-- Cadre rouge avec le message -->
+<div class="alert-message">
+  Pas de mise en relation entre les prestataires externes et les organismes de formation
+</div>
+<section class="typingCenter">
+    <h1 class="typing">Être Partenaire avec nous ? </h1>
+</section>
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active">Pourquoi Choisir Des Prestataires Labélisés ?</div>
+            <div class="tab">Gain de Temps pour Votre Organisme</div>
+            <div class="tab">Un Partenariat Dédié à Votre Organisme</div>
+        </div>
+    
+        <div class="tab-content">
+            <div class="tab-pane active">
+                <h2>Un Processus Rigoureux pour Garantir l’Excellence</h2>
+                <p>Nos prestataires externes ont passé un processus rigoureux de labélisation, vérifiant leur respect des bonnes pratiques déontologiques. Cette certification garantit que leurs services répondent aux exigences des organismes de formation, assurant ainsi une expérience d’apprentissage de qualité et sans faille. En choisissant un prestataire labélisé, vous faites appel à un professionnel engagé.</p>
+            </div>
+            <div class="tab-pane">
+                <h2>Des Prestataires Audités et Vérifiés</h2>
+                <p>Simplifiez vos recrutements en faisant appel à des prestataires externes déjà certifiés et audités pour leur conformité aux normes déontologiques. Le label que nous proposons vient compléter les démarches techniques, telles que Qualiopi, en vous garantissant des prestataires fiables et conformes, sans mauvaises surprises. Cela vous épargne de longues vérifications internes, vous permettant ainsi de vous concentrer sur l'essentiel : la réussite de vos apprenants.</p>
+            </div>
+            <div class="tab-pane">
+                <h2>Co-construisons les Standards de Demain</h2>
+                <p>Nous travaillons en étroite collaboration avec nos partenaires, en vue d’améliorer et d’adapter en permanence notre label. Ce partenariat n’a qu’un objectif : faire évoluer les standards déontologiques en tenant compte des spécificités de chaque organisme de formation. Nous sommes à votre écoute, pour co-construire ensemble des solutions sur mesure et garantir des collaborations transparentes et bénéfiques pour tous.</p>
+            </div>
+        </div>
+    </div>
+    
+    <h2 id="confiance">Ils nous font confiance</h2>
+    <div class="person">
+      <div id="partenariat">
+        <div class="container-inner">
+          <img
+            class="circle"
+            src=""
+          /> 
+          <img
+            class="img img3"
+            src="../../../static/fasto/images/img/gaetan.png"
+          />
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="name-container">
+        <div class="name">Gaëtan Maiuri </div>
+        <img src="../../../static/fasto/images/img/LessonSharing logo - v4-circle - BLUE (RGBA).png" alt="Logo" class="name-logo">
+        
+      </div>
+      <div class="title">Fondateur de la société LessonSharing, spécialisée dans la Cybersécurité, l'infogérance et la formation supérieure</div>
+    </div>
+  
+  
+ </main>
+ <hr>
+
+  <!-- FOOTER  -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section about">
+        <h2 class="logo-text">Institut de Labélisation</h2>
+        <p id="textfooter">
+          L'Institut est dédié à la labélisation des prestataires externes, assurant des standards de
+          qualité élevés.
+        </p>
+        <div class="contact">
+          <span><i class="fas fa-map-marker-alt"></i> Paris, France</span>
+          <span><i class="fas fa-envelope"></i> contact@institut-labelisation.fr</span>
+        </div>
+      </div>
+
+      <div class="footer-section links">
+        <h3>Liens Utiles</h3>
+        <ul>
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">CGU</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section social">
+        <h3>Suivez-nous</h3>
+        <div class="social-icons">
+          <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-facebook"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2024 Institut de Labélisation | Tous droits réservés.
+    </div>
+  </footer>
+
+
+
+
+</body>
+
+</html>

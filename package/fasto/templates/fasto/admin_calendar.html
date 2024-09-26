@@ -1,0 +1,172 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+    .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-gap: 10px;
+        margin-top: 20px;
+    }
+
+    .calendar-day {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        min-height: 150px;
+    }
+
+    .calendar-day-header {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        color: #333;
+    }
+
+    .appointment {
+        background-color: #e0f7e0;
+        border-radius: 5px;
+        padding: 8px;
+        margin: 5px 0;
+        text-align: center;
+        width: 100%;
+        font-size: 0.9em;
+        transition: background-color 0.3s ease;
+    }
+
+    .appointment:hover {
+        background-color: #d0f0d0;
+    }
+
+    .calendar-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .calendar-navigation button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 1em;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .calendar-navigation button:hover {
+        background-color: #0056b3;
+    }
+
+    .delete-button {
+        background-color: #d9534f;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .delete-button:hover {
+        background-color: #c9302c;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container mt-3">
+        <h2>Calendrier des rendez-vous des formateurs</h2>
+
+        <div class="calendar">
+            {% for event in events %}
+                <div class="calendar-day">
+                    <div class="calendar-day-header">
+                        {{ event.date }} à {{ event.time }}
+                    </div>
+                    <div class="appointment">
+                        <strong>{{ event.time }}</strong><br>
+                        <a href="{{ url_for('main.view_profile', user_id=event.user_id) }}">
+                            {{ event.title }}
+                        </a>
+                        <button class="delete-button" data-event-id="{{ event.id }}">Annuler</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+      jQuery(document).ready(function(){
+        setTimeout(function() {
+            dezSettingsOptions.version = 'dark';
+            new dezSettings(dezSettingsOptions);
+        },1500);
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-button').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const eventId = this.getAttribute('data-event-id');
+                
+                Swal.fire({
+                    title: 'Êtes-vous sûr ?',
+                    text: "Vous ne pourrez pas revenir en arrière après cette action !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, annulez-le !',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/delete_appointment/${eventId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Annulé!',
+                                    'Le rendez-vous a été annulé.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload(); // Recharger la page pour voir les changements
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Erreur!',
+                                    data.message,
+                                    'error'
+                                );
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire(
+                                'Erreur!',
+                                'Une erreur est survenue lors de l\'annulation du rendez-vous.',
+                                'error'
+                            );
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3>Charte de Conformité</h3>
+    <p>Veuillez lire attentivement la charte avant d'accepter :</p>
+    <!-- Contenu de la charte -->
+    <form method="POST" action="{{ url_for('main.charte_conformite') }}">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="charteCheckbox" name="charte_checkbox" required>
+            <label class="form-check-label" for="charteCheckbox">J'ai lu et j'accepte les termes de la charte.</label>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Accepter</button>
+    </form>
+</div>
+{% endblock %}

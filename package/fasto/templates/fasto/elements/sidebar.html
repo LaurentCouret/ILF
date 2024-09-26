@@ -1,0 +1,23 @@
+<div class="deznav">
+    <div class="deznav-scroll">
+        <ul class="metismenu" id="menu">
+                <ul aria-expanded="false">
+                    <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+                </ul>
+            </li>
+
+            <!-- Bouton pour le formulaire, visible uniquement pour les écoles -->
+            {% if current_user.role == 'ecole' %}
+            <li>
+                <a href="/questionnaire" aria-expanded="false">
+                    <i class="flaticon-form"></i>
+                    <span class="nav-text">Formulaire École</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <div class="copyright">
+            <p><strong>Institut Labélisation Français</strong> © 2024 All Rights Reserved</p>
+        </div>
+    </div>
+</div>

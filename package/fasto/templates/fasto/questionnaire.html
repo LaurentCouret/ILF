@@ -1,0 +1,208 @@
+{% extends 'fasto/elements/layouts/admin.html' %}
+
+{% block additional_css %}
+<style>
+    .action-button {
+        display: block;
+        width: 50%;
+        padding: 10px;
+        margin-bottom: 20px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        background-color: #2F3061;
+        border: none;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+        text-align: center;
+    }
+
+    .action-button:hover {
+        background-color: #0056b3;
+    }
+
+    .form-section {
+        display: none;
+        margin-top: 30px;
+    }
+
+    .form-section.active {
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-body">
+    <div class="container-fluid">
+        <!-- Si le code n'est pas validé, on affiche le formulaire pour entrer le code -->
+        {% if not code_valid %}
+        <h2 class="mb-4">Validation du code unique pour accéder au formulaire</h2>
+
+        <form method="POST" action="{{ url_for('main.questionnaire') }}">
+            <div class="form-group">
+                <label for="code">Veuillez entrer le code unique fourni par le formateur :</label>
+                <input type="text" class="form-control" id="code" name="code" required>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Valider le code</button>
+        </form>
+        {% endif %}
+
+        <!-- Si le code est validé, afficher les options -->
+        {% if code_valid %}
+        <div class="mt-5">
+            <h2 class="mb-4">Choisissez une action</h2>
+
+            <button id="showQuestionnaire" class="action-button">Remplir le questionnaire</button>
+            <button id="showUpload" class="action-button">Envoyer un fichier</button>
+
+            <!-- Formulaire de Questionnaire -->
+            <div id="questionnaireForm" class="form-section">
+                <h4>Remplissez le questionnaire ci-dessous :</h4>
+                <form method="POST" action="{{ url_for('main.submit_questionnaire', formateur_id=formateur_id) }}">
+                    <!-- Question 1 -->
+                    <div class="form-group">
+                        <label>Êtes-vous satisfait de la prestation du formateur ?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="satisfaction_prestation" value="Pas satisfait" id="prestation1" required>
+                            <label class="form-check-label" for="prestation1">Pas satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="satisfaction_prestation" value="Plutôt satisfait" id="prestation2">
+                            <label class="form-check-label" for="prestation2">Plutôt satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="satisfaction_prestation" value="Satisfait" id="prestation3">
+                            <label class="form-check-label" for="prestation3">Satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="satisfaction_prestation" value="Très satisfait" id="prestation4">
+                            <label class="form-check-label" for="prestation4">Très satisfait</label>
+                        </div>
+                    </div>
+
+                    <!-- Question 2 -->
+                    <div class="form-group">
+                        <label>Le rappelleriez-vous pour une autre intervention ?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rappelleriez" value="Pas satisfait" id="rappelleriez1" required>
+                            <label class="form-check-label" for="rappelleriez1">Pas satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rappelleriez" value="Plutôt satisfait" id="rappelleriez2">
+                            <label class="form-check-label" for="rappelleriez2">Plutôt satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rappelleriez" value="Satisfait" id="rappelleriez3">
+                            <label class="form-check-label" for="rappelleriez3">Satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rappelleriez" value="Très satisfait" id="rappelleriez4">
+                            <label class="form-check-label" for="rappelleriez4">Très satisfait</label>
+                        </div>
+                    </div>
+
+                    <!-- Question 3 -->
+                    <div class="form-group">
+                        <label>La qualité de l'interaction était-elle satisfaisante ?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="interaction" value="Pas satisfait" id="interaction1" required>
+                            <label class="form-check-label" for="interaction1">Pas satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="interaction" value="Plutôt satisfait" id="interaction2">
+                            <label class="form-check-label" for="interaction2">Plutôt satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="interaction" value="Satisfait" id="interaction3">
+                            <label class="form-check-label" for="interaction3">Satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="interaction" value="Très satisfait" id="interaction4">
+                            <label class="form-check-label" for="interaction4">Très satisfait</label>
+                        </div>
+                    </div>
+
+                    <!-- Question 4 -->
+                    <div class="form-group">
+                        <label>La ponctualité du formateur était-elle satisfaisante ?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="ponctualite" value="Pas satisfait" id="ponctualite1" required>
+                            <label class="form-check-label" for="ponctualite1">Pas satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="ponctualite" value="Plutôt satisfait" id="ponctualite2">
+                            <label class="form-check-label" for="ponctualite2">Plutôt satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="ponctualite" value="Satisfait" id="ponctualite3">
+                            <label class="form-check-label" for="ponctualite3">Satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="ponctualite" value="Très satisfait" id="ponctualite4">
+                            <label class="form-check-label" for="ponctualite4">Très satisfait</label>
+                        </div>
+                    </div>
+
+                    <!-- Question 5 -->
+                    <div class="form-group">
+                        <label>Recommanderiez-vous ce formateur à d'autres établissements ?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recommande" value="Pas satisfait" id="recommande1" required>
+                            <label class="form-check-label" for="recommande1">Pas satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recommande" value="Plutôt satisfait" id="recommande2">
+                            <label class="form-check-label" for="recommande2">Plutôt satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recommande" value="Satisfait" id="recommande3">
+                            <label class="form-check-label" for="recommande3">Satisfait</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recommande" value="Très satisfait" id="recommande4">
+                            <label class="form-check-label" for="recommande4">Très satisfait</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Soumettre le questionnaire</button>
+                </form>
+            </div>
+
+            <!-- Formulaire de Téléchargement de fichier -->
+            <div id="uploadFileForm" class="form-section">
+                <h4>Envoyez un fichier concernant le formateur :</h4>
+                <form method="POST" action="{{ url_for('main.upload_file', formateur_id=formateur_id) }}" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="file">Choisissez un fichier :</label>
+                        <input type="file" id="file" name="file" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Envoyer le fichier</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const showQuestionnaireBtn = document.getElementById('showQuestionnaire');
+        const showUploadBtn = document.getElementById('showUpload');
+        const questionnaireForm = document.getElementById('questionnaireForm');
+        const uploadFileForm = document.getElementById('uploadFileForm');
+
+        showQuestionnaireBtn.addEventListener('click', function () {
+            questionnaireForm.classList.add('active');
+            uploadFileForm.classList.remove('active');
+        });
+
+        showUploadBtn.addEventListener('click', function () {
+            questionnaireForm.classList.remove('active');
+            uploadFileForm.classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

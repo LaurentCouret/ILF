@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="../../../static/fasto/images/img/Favicon.png" />
+  <link rel="stylesheet" href="../../../static/fasto/css/styleAccueil.css">
+  <title>Institut de Labelisation Français</title>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
+  <script src="../../../static/fasto/js/script.js" defer></script>
+</head>
+
+<body>
+  <!-- PARTIE HEADER  -->
+    <header>
+      <nav class="navbar">
+        <a href="{{ url_for('main.home') }}"><img src="../../../static/fasto/images/img/logo.png" alt="Logo" class="logo"></a>
+        <ul class="nav-links">
+          <li><a href="{{ url_for('main.notrehistoire') }}">Notre Histoire</a></li>
+          <li><a href="{{ url_for('main.partenariat') }}">Partenariat</a></li>
+          <li><a href="{{ url_for('main.nousrejoindre') }}">Nous Rejoindre</a></li>
+          <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+          <li><a href="{{ url_for('main.page_login') }}" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
+          <li><a href="{{ url_for('main.page_register_choice') }}" class="btn-primary"><i class="fas fa-user-plus"></i> Inscription</a></li>
+        </ul>
+        <div class="navbar-right"></div>
+        <img class="burger" src="../../../static/fasto/images/img/burger-blanc.png">
+      </nav>
+      <br>
+      <div class="line"></div>
+    </header>
+
+ 
+  <!-- SECTION N°1 -->
+  <main>
+ 
+  <div class="container">
+    <div class="slogan">
+      <p class="main-title">INSTITUT DE LABELISATION FRANÇAIS</p>
+      <div class="words">
+        <span class="word">On vise l'excellence</span>
+        <span class="word">On vise la perfection</span>
+        <span class="word">Au service des prestataires</span>
+      </div>
+    </div>
+    <a href="#next-section" class="scroll-down">
+      <i class="fas fa-chevron-down"></i>
+    </a>
+  </div>
+
+  
+  <!-- SECTION N°2 -->
+  <section id="next-section">
+    <section class="services-section">
+      <div class="title-container">
+        <img src="../../../static/fasto/images/img/GIU AMA 199-14.jpg" alt="Laurier" class="laurel-image">
+      </div>
+      <section class="objectives-section">
+        <div class="objectives-intro">
+          <h2>Notre Institut</h2>
+          <p>L'Institut de Labélisation Français (ILF) est le leader en matière de labellisation des prestataires
+            externes. Notre mission est d'assurer la reconnaissance des prestataires qui excellent dans leur pratique
+    déontologiques, alliant compétence, innovation et engagement.</p>
+        </div>
+        <div class="objectives-cards">
+          <div class="objective-card">
+            <div class="icon">
+              <!-- Avenir -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#b10f2e" width="48px" height="48px">
+                <path
+                  d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 18a8 8 0 118-8 8 8 0 01-8 8zm4.93-10.25l-5 2.72a.999.999 0 01-1.43-.89V7.71a1 1 0 10-2 0v5a2.99 2.99 0 002.6 2.95l5-2.71a1 1 0 10-1-1.74z" />
+              </svg>
+            </div>
+            <h3>Avenir</h3>
+            <p>Nous nous engageons à anticiper les besoins futurs en éducation, assurant ainsi que nos labels répondent
+              aux exigences de demain.</p>
+          </div>
+          <div class="objective-card">
+            <div class="icon">
+              <!-- Confiance -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#b10f2e" width="48px" height="48px">
+                <path
+                  d="M12 2L2 8v6c0 5.25 7 11 10 11s10-5.75 10-11V8L12 2zm0 18c-2.2 0-6-3.1-6-8V9.6l6-3.42 6 3.42V12c0 4.9-3.8 8-6 8zm-4-6h2v-4h4v4h2v-6H8v6z" />
+              </svg>
+            </div>
+            <h3>Confiance</h3>
+            <p>Notre label est un symbole de confiance, garantissant des pratiques déontologiques de haute qualité pour
+              les prestataires labellisés.</p>
+          </div>
+          <div class="objective-card">
+            <div class="icon">
+              <!-- Innovation -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#b10f2e" width="48px" height="48px">
+                <path
+                  d="M12 1L8.66 7.99 1 9.26l5.35 5.35L4.91 23 12 19.27 19.09 23l-1.44-8.39L23 9.26l-7.66-1.27L12 1zm0 15.39l-4.24 2.34 1.15-5.16L5.07 9.66l5.29-.83L12 4.1l1.64 4.73 5.29.83-3.84 3.91 1.15 5.16L12 16.39z" />
+              </svg>
+            </div>
+            <h3>Innovation</h3>
+            <p>Nous encourageons l'innovation continue en intégrant les dernières technologies et méthodes éducatives.
+            </p>
+          </div>
+        </div>
+        <div class="ctaa-button">
+          <a href="{{ url_for('main.nousrejoindre') }}" class="btn-labellisation">Tout savoir pour être labélisé</a>
+        </div>
+      </section>
+
+    </section>
+  </section>
+
+  <!-- SECTION N°3 -->
+  <section id="webinaire-section">
+    <div id="webinaire-container">
+      <div id="webinaire-text">
+        <div id="webinaire-tag">Webinaires & Événements</div>
+        <h1>
+          <a href="#">Rejoignez notre prochain webinaire : Comprendre le processus de labellisation</a>
+        </h1>
+      </div>
+      <div id="webinaire-image">
+        <a href="#">
+          <img src="../../../static/fasto/images/img/img1.png" alt="Webinaire Image" title="Webinaire">
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- SECTION N°4 -->
+  <section class="partner-section">
+    <h2 class="section-title">Nos Partenaires</h2>
+    <p class="sub-title">Ces écoles nous font confiance...</p>
+    <div class="partner-logos">
+      <img src="../../../static/fasto/images/img/LessonSharing logo - v4-circle - BLUE (RGBA).png" alt="Logo Partenaire 1">
+      <img src="logo2.png" alt="Logo Partenaire 2">
+      <img src="logo3.png" alt="Logo Partenaire 3">
+    </div>
+
+    <div class="main-partner">
+      <h3>Notre Partenaire Principal</h3>
+      <div class="writing-effect">
+        <span>Nous collaborons avec des experts de renom pour garantir l'excellence de notre label.</span>
+      </div>
+      <div class="partner-info">
+        <img src="../../../static/fasto/images/img/gaetan-expert-cybersecurite-150x150.jpg" alt="Portrait de Gaëtan MAIRUI">
+        <p><strong>Gaëtan MAIRUI</strong><br>Directeur pédagogique chez Ipssi et PDG de LessonSharing</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION N°5 -->
+
+  <div class="animated-background">
+    <div class="content">
+      <h2>👋 C'est le bon moment</h2>
+      <p>Pour être labelisé</p>
+      <a href="{{ url_for('main.page_register_choice') }}" class="cta-button">Je dépose ma candidature</a>
+    </div>
+  </div>
+</main>
+
+
+  <!-- FOOTER  -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section about">
+        <h2 class="logo-text">Institut de Labélisation Français</h2>
+        <p id="textfooter">
+          L'Institut est dédié à la labélisation des prestataires externes, assurant des standards de
+          qualité élevés.
+        </p>
+        <div class="contact">
+          <span><i class="fas fa-map-marker-alt"></i> 10 rue de Penthièvre 75008 Paris, France</span>
+          <span><i class="fas fa-envelope"></i> contact@institutdelabelisation.fr</span>
+        </div>
+      </div>
+
+      <div class="footer-section links">
+        <h3>Liens Utiles</h3>
+        <ul>
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">CGU</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section social">
+        <h3>Suivez-nous</h3>
+        <div class="social-icons">
+          <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2024 Institut de Labélisation Français | Tous droits réservés.
+    </div>
+  </footer>
+
+
+
+
+</body>
+
+</html>
