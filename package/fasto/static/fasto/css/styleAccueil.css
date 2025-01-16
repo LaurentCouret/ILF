@@ -19,9 +19,6 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 40px;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .navbar-center {
@@ -30,7 +27,7 @@ header {
 }
 
 .logo {
-  width: 240px;
+  width: 10vw;
   margin-right: 30px;
 }
 
@@ -46,7 +43,6 @@ header {
   color: #fff;
   font-weight: 600;
   position: relative;
-  padding: 10px;
 }
 
 .nav-links a:hover {
@@ -124,7 +120,7 @@ header {
 }
 
 .slogan {
-  padding: 30px;
+  padding: 55px 10px;
   background: rgba(177, 15, 46, 0.9);
   border-radius: 8px;
   box-shadow: 0 0 45px 0 rgba(0, 0, 0, 0.2);
