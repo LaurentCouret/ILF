@@ -1,7 +1,8 @@
+#routes.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, current_app
 from flask_login import login_user, login_required, logout_user, current_user
 from .models import User, ContactMessage
-from .email import send_confirmation_email
+from .email import send_confirmation_email, send_discord_invitation_email
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 import logging
@@ -23,6 +24,12 @@ import json
 from PIL import Image
 from time import time
 import pytz
+from .models import Visit
+import re
+import random
+import string
+import requests
+
 
 def resize_and_encode_image(image_file, max_size=(300, 300)):
     img = Image.open(image_file)
@@ -46,8 +53,8 @@ def resize_and_encode_image(image_file, max_size=(300, 300)):
 
 
 # Configuration de l'API Stripe pour les paiements
-stripe.api_key = 'sk_test_51PTRo5RwBdazGDW1lgErIybTG35k9Kw85zS3ARGzs2ggTOxIPI4T0zqAMnlknVRZOb5YdnkTBrA3mYDL1V6zNXoE00YckAa315'
-stripe_public_key = 'pk_test_51PTRo5RwBdazGDW1JLvN5iQHliKCOxZhcKX7VkUYNoekTYCNNfqPdpXnpfsgxiT0OHpdtjZwKVGcRURK7yZGLcr600zIgDbmne'
+stripe.api_key = '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'
+stripe_public_key = 'pk_live_51PxX8GKsrT3yjgVUb0DhF84Khrq4xkYfJHH0TC8amOVuHzFdUohWxJwlnf2lTPGJFSEEYuDpypCE5VxvXzk8PW1y00KEoI5cyF'
 
 # Initialisation de la configuration du logger
 logging.basicConfig(level=logging.DEBUG)
@@ -58,7 +65,37 @@ main = Blueprint('main', __name__)
 # Route pour la page d'accueil
 @main.route("/")
 def home():
+    # Enregistrement de la visite
+    visit = Visit(
+        url=request.path,
+        user_agent=request.headers.get('User-Agent'),
+        visit_time=datetime.now()
+    )
+    visit.save()
+    
     return render_template("fasto/accueil/index.html")
+
+@main.route('/end_visit', methods=['POST'])
+def end_visit():
+    data = request.get_json()
+    duration = data.get('duration')
+    
+    print(f"Requête reçue avec les données : {data}")  # Debugging
+
+    # Mettre à jour la dernière visite de l'utilisateur avec la durée
+    result = current_app.db.visits.update_one(
+        {'user_agent': request.headers.get('User-Agent')},  # Filtre par user_agent
+        {'$set': {'duration': duration}},
+        upsert=False
+    )
+    
+    if result.modified_count == 0:
+        print("Aucune entrée mise à jour")
+    
+    return jsonify(success=True)
+
+
+
 
 @main.route("/notrehistoire")
 def notrehistoire():
@@ -72,26 +109,76 @@ def partenariat():
 def nousrejoindre():
     return render_template("fasto/accueil/nousrejoindre.html")
 
+@main.route("/discord")
+def discord():
+    return render_template("fasto/accueil/discord.html")
 
 # Route pour la page de choix d'inscription
 @main.route("/page-register-choice")
 def page_register_choice():
     return render_template("fasto/pages/page-register-choice.html")
 
-# Route pour l'inscription des formateurs
+# Route pour la page de choix d'inscription
 @main.route("/register-formateur", methods=["GET", "POST"])
 def register_formateur():
     if request.method == "POST":
+        
+        # Récupérer le code d'affiliation s'il est fourni
+        affiliation_code = request.form.get("affiliation_code")
+        
+        # Vérifier l'existence du code d'affiliation dans la base de données
+        ambassador = None
+        if affiliation_code:
+            ambassador = User.get_by_affiliation_code(affiliation_code)
+            logging.debug(f"Code d'affiliation saisi : {affiliation_code}")
+            logging.debug(f"Ambassadeur trouvé : {ambassador}")
+
+            if not ambassador or ambassador.role != "ambassadeur":
+                flash("Code d'affiliation invalide.", "danger")
+                return redirect(url_for("main.register_formateur"))
+
+            
+       # Récupération de la réponse reCAPTCHA
+        recaptcha_response = request.form.get("g-recaptcha-response")
+        if not recaptcha_response:
+            flash("Veuillez compléter le reCAPTCHA.", "danger")
+            return redirect(url_for("main.register_formateur"))
+
+        # Vérification reCAPTCHA avec la clé secrète
+        recaptcha_secret = "6LfEyXsqAAAAAD5sR4Jp-Rw8XDMuIBzLFuENfO7k"
+        recaptcha_verification_url = "https://www.google.com/recaptcha/api/siteverify"
+        recaptcha_payload = {
+            "secret": recaptcha_secret,
+            "response": recaptcha_response
+        }
+        recaptcha_response = requests.post(recaptcha_verification_url, data=recaptcha_payload).json()
+
+        # Vérifier si reCAPTCHA est réussi
+        if not recaptcha_response.get("success"):
+            flash("Échec de la vérification reCAPTCHA. Veuillez réessayer.", "danger")
+            return redirect(url_for("main.register_formateur"))
+        
+        # Si le reCAPTCHA est validé, on continue avec l'enregistrement
         # Récupération des données du formulaire
         nom = request.form.get("nom")
         prenom = request.form.get("prenom")
         secteur = request.form.get("secteur")
-        competences_json = request.form.get("competences")  # Compétences envoyées sous format JSON
+        competences_json = request.form.get("competences")
         email = request.form.get("email")
         confirm_email = request.form.get("confirm_email")
         password = request.form.get("password")
         confirm_password = request.form.get("confirm_password")
         photo_profil = None
+
+
+        # Validation du nom et prénom avec une regex
+        if not re.match(r"^[A-Za-zÀ-ÿ' -]+$", nom):
+            flash("Le nom ne peut contenir que des lettres, des espaces, des traits d'union ou des apostrophes.", "danger")
+            return redirect(url_for("main.register_formateur"))
+
+        if not re.match(r"^[A-Za-zÀ-ÿ' -]+$", prenom):
+            flash("Le prénom ne peut contenir que des lettres, des espaces, des traits d'union ou des apostrophes.", "danger")
+            return redirect(url_for("main.register_formateur"))
 
         # Vérification de la correspondance des emails
         if email != confirm_email:
@@ -102,6 +189,14 @@ def register_formateur():
         if password != confirm_password:
             flash("Les mots de passe ne correspondent pas.", "danger")
             return redirect(url_for("main.register_formateur"))
+
+        # Vérification de la force du mot de passe
+        password_regex = r"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?\":{}|<>;'\[\]\-_/+=~`])[A-Za-z\d!@#$%^&*(),.?\":{}|<>;'\[\]\-_/+=~`]{15,}$"
+        if not re.match(password_regex, password):
+            flash("Le mot de passe doit contenir au moins 15 caractères, une majuscule, un chiffre et un caractère spécial.", "danger")
+            return redirect(url_for("main.register_formateur"))
+
+
 
         # Vérification si l'utilisateur existe déjà
         user = User.get_by_email(email)
@@ -122,23 +217,30 @@ def register_formateur():
             if photo_profil_file:
                 photo_profil_file.seek(0)  # Remettre le pointeur au début après lecture
                 photo_profil = resize_and_encode_image(photo_profil_file)
+                print("Photo de profil traitée.")
 
         # Création d'un nouvel utilisateur
         new_user = User(
             nom=nom,
             prenom=prenom,
             secteur=secteur,
-            competences=competences,  # Compétences traitées
+            competences=competences,
             email=email,
             password=password,
             role="formateur",
             photo_profil=photo_profil,
             label_obtained_date=datetime.now()
         )
+
+        # Sauvegarde de l'utilisateur
         new_user.save()
 
+        # Associer le formateur à l'ambassadeur
+        if ambassador:
+            ambassador.add_affiliated_user(new_user.email)
+            
         # Envoi de l'email de confirmation
-        send_confirmation_email(email)
+        send_confirmation_email(email)    
         flash("Compte formateur créé avec succès. Veuillez vérifier votre email pour activer votre compte.", "success")
         return redirect(url_for("main.page_login"))
 
@@ -150,6 +252,25 @@ def register_formateur():
 @main.route("/register-ecole", methods=["GET", "POST"])
 def register_ecole():
     if request.method == "POST":
+        # Récupération de la réponse reCAPTCHA
+        recaptcha_response = request.form.get("g-recaptcha-response")
+        if not recaptcha_response:
+            flash("Veuillez compléter le reCAPTCHA.", "danger")
+            return redirect(url_for("main.register_formateur"))
+
+        # Vérification reCAPTCHA avec la clé secrète
+        recaptcha_secret = "6LfEyXsqAAAAAD5sR4Jp-Rw8XDMuIBzLFuENfO7k"
+        recaptcha_verification_url = "https://www.google.com/recaptcha/api/siteverify"
+        recaptcha_payload = {
+            "secret": recaptcha_secret,
+            "response": recaptcha_response
+        }
+        recaptcha_response = requests.post(recaptcha_verification_url, data=recaptcha_payload).json()
+
+        # Vérifier si reCAPTCHA est réussi
+        if not recaptcha_response.get("success"):
+            flash("Échec de la vérification reCAPTCHA. Veuillez réessayer.", "danger")
+            return redirect(url_for("main.register_formateur"))
         # Récupération des données du formulaire
         nom = request.form.get("nom")
         prenom = request.form.get("prenom")
@@ -160,7 +281,15 @@ def register_ecole():
         confirm_password = request.form.get("confirm_password")
         telephone = request.form.get("telephone")
         ecole = request.form.get("ecole")
-        autre_ecole = request.form.get("autre_ecole")
+
+        # Validation du nom et prénom avec une regex
+        if not re.match(r"^[A-Za-zÀ-ÿ' -]+$", nom):
+            flash("Le nom ne peut contenir que des lettres, des espaces, des traits d'union ou des apostrophes.", "danger")
+            return redirect(url_for("main.register_ecole"))
+
+        if not re.match(r"^[A-Za-zÀ-ÿ' -]+$", prenom):
+            flash("Le prénom ne peut contenir que des lettres, des espaces, des traits d'union ou des apostrophes.", "danger")
+            return redirect(url_for("main.register_ecole"))
 
         # Vérification de la correspondance des emails
         if email != confirm_email:
@@ -179,7 +308,17 @@ def register_ecole():
             return redirect(url_for("main.register_ecole"))
 
         # Création d'un nouvel utilisateur (école)
-        new_user = User(nom=nom, prenom=prenom, status=status, email=email, password=password, telephone=telephone, ecole=ecole, role="ecole")
+        new_user = User(
+            nom=nom,
+            prenom=prenom,
+            status=status,
+            email=email,
+            password=password,
+            telephone=telephone,
+            ecole=ecole,
+            role="ecole",
+            label_obtained_date=datetime.now()
+        )
         new_user.save()
 
         # Envoi de l'email de confirmation
@@ -262,33 +401,95 @@ def index():
     # Redirection vers le bon tableau de bord selon le rôle de l'utilisateur
     if current_user.role == "admin":
         # Pour l'admin : charger les données des formateurs et des écoles
-        formateurs = list(current_app.db.users.find({"role": "formateur"}))
+        formateurs = list(current_app.db.users.find({
+            "$or": [
+                {"role": "formateur"},
+                {"role": {"$regex": "ambassadeur"}}
+            ]
+        }))
         ecoles = list(current_app.db.users.find({"role": "ecole"}))
         
+        # Récupérer les statistiques de visites
+        total_visits = current_app.db.visits.count_documents({})
+        visit_stats = list(current_app.db.visits.aggregate([
+            {"$group": {"_id": "$url", "count": {"$sum": 1}, "avg_duration": {"$avg": "$duration"}}}
+        ]))
+
         context.update({
             "formateurs": formateurs,
             "total_formateurs": len(formateurs),
-            "total_ecoles": len(ecoles)
+            "total_ecoles": len(ecoles),
+            "total_visits": total_visits,
+            "visit_stats": visit_stats
         })
+
         return render_template("fasto/admin_dashboard.html", **context)
-    elif current_user.role == "formateur":
-        # Pour les formateurs : calculer les jours restants pour le label
+
+    elif "formateur" in current_user.role or "ambassadeur" in current_user.role:
+    # Pour les formateurs et ambassadeurs : calculer les jours restants pour le label
         days_remaining = 365 - (datetime.now() - current_user.label_obtained_date).days
         days_remaining = max(days_remaining, 0)
         context.update({
             "days_remaining": days_remaining,
-            "can_schedule": not current_app.db.meetings.find_one({"user_id": current_user.id, "status": "confirmed"})
+            "can_schedule": not current_app.db.meetings.find_one({"user_id": current_user.id, "status": "confirmed"}),
+             "unique_code": current_user.unique_code  
         })
         return render_template("fasto/formateur_dashboard.html", **context)
+
     elif current_user.role == "ecole":
         # Pour les écoles : afficher les formateurs
-        formateurs = list(current_app.db.users.find({"role": "formateur"}))
+        formateurs = list(current_app.db.users.find({"role": {"$regex": "formateur"}}))
         context.update({
             "formateurs": formateurs
         })
         return render_template("fasto/ecole_dashboard.html", **context)
 
     return "Unauthorized", 403
+
+@main.route('/admin_dashboard', methods=['GET'])
+@login_required
+def admin_dashboard():
+    if current_user.role != "admin":
+        flash("Vous n'êtes pas autorisé à accéder à cette page.", "danger")
+        return redirect(url_for('main.index'))
+
+    try:
+        # Récupérer les formateurs et ambassadeurs
+        formateurs = list(
+            current_app.db.users.find(
+                {"role": {"$regex": "formateur"}},
+                {"password_hash": 0}
+            )
+        )
+
+        # Collecte des statistiques
+        total_formateurs = len(formateurs)
+        total_ecoles = current_app.db.users.count_documents({"role": "ecole"})
+        total_visits = current_app.db.visits.count_documents({})
+
+        visit_stats = list(current_app.db.visits.aggregate([
+            {"$group": {"_id": "$url", "count": {"$sum": 1}, "avg_duration": {"$avg": "$duration"}}}
+        ]))
+
+        context = {
+            "formateurs": formateurs,
+            "total_formateurs": total_formateurs,
+            "total_ecoles": total_ecoles,
+            "total_visits": total_visits,
+            "visit_stats": visit_stats
+        }
+    except Exception as e:
+        flash(f"Erreur lors du chargement des données : {e}", "danger")
+        context = {
+            "formateurs": [],
+            "total_formateurs": 0,
+            "total_ecoles": 0,
+            "total_visits": 0,
+            "visit_stats": []
+        }
+
+    return render_template('fasto/admin_dashboard.html', **context)
+
 
 # Route pour mettre à jour le statut d'un formateur (admin seulement)
 @main.route('/update_formateur_status', methods=['POST'])
@@ -306,7 +507,7 @@ def update_formateur_status():
         return redirect(url_for('main.admin_dashboard'))
     
     result = current_app.db.users.update_one(
-        {"_id": ObjectId(formateur_id), "role": "formateur"},
+        {"_id": ObjectId(formateur_id), "role": {"$regex": "formateur"}},
         {"$set": {"status": new_status}}
     )
 
@@ -357,7 +558,12 @@ def confirm_email(token):
         user.email_confirmed = True
         current_app.db.users.update_one({"email": email}, {"$set": {"email_confirmed": True}})
         flash("Votre compte a été confirmé avec succès!", "success")
+        
+        # Envoi de l'email d'invitation Discord
+        send_discord_invitation_email(email)
+
     return redirect(url_for("main.page_login"))
+
 
 @main.route('/calendar')
 @login_required
@@ -539,14 +745,25 @@ def admin_calendar():
 
     for meeting in meetings:
         user = current_app.db.users.find_one({"_id": ObjectId(meeting['user_id'])})
-        events.append({
-            'id': str(meeting['_id']),
-            'title': f"{user['prenom']} {user['nom']}",
-            'date': meeting['date'],
-            'time': meeting['time'],
-            'status': meeting['status'],
-            'user_id': user['_id']  # Ajout de l'ID du formateur
-        })
+        if user:  # Vérifie si l'utilisateur a bien été trouvé
+            events.append({
+                'id': str(meeting['_id']),
+                'title': f"{user['prenom']} {user['nom']}",
+                'date': meeting['date'],
+                'time': meeting['time'],
+                'status': meeting['status'],
+                'user_id': user['_id']  # Ajout de l'ID du formateur
+            })
+        else:
+            events.append({
+                'id': str(meeting['_id']),
+                'title': "Utilisateur inconnu",
+                'date': meeting['date'],
+                'time': meeting['time'],
+                'status': meeting['status'],
+                'user_id': None  # Pas d'ID utilisateur
+            })
+
 
     return render_template("fasto/admin_calendar.html", events=events)
 
@@ -760,16 +977,16 @@ def create_checkout_session():
         return jsonify({'error': 'Date ou heure manquante.'}), 400
 
     try:
-        # Créer la session Stripe avec Klarna ou Afterpay comme moyen de paiement
+        # Créer la session Stripe avec les méthodes de paiement ajoutées : carte bleue et PayPal
         session = stripe.checkout.Session.create(
-            payment_method_types=['card', 'klarna', 'afterpay_clearpay'],  # Ajouter Klarna ou Afterpay
+            payment_method_types=['card', 'paypal'],  # Ajout de 'paypal' comme méthode de paiement
             line_items=[{
                 'price_data': {
                     'currency': 'eur',
                     'product_data': {
                         'name': 'Acompte pour rendez-vous',
                     },
-                    'unit_amount': 30000,  # Montant total de 300€
+                    'unit_amount': 5000,  # Montant total de 50€
                 },
                 'quantity': 1,
             }],
@@ -790,6 +1007,7 @@ def create_checkout_session():
     except stripe.error.StripeError as e:
         logging.error(f"Erreur Stripe: {e}")
         return jsonify({'error': 'Erreur lors de la création de la session Stripe.'}), 500
+
 
 
 
@@ -1012,28 +1230,59 @@ def reset_password(token):
 
     return render_template('fasto/pages/page-reset-password.html')
 
+def is_valid_name(value):
+    return bool(re.match(r"^[A-Za-zÀ-ÿ' -]{2,}$", value))
+
+def is_valid_subject(value):
+    return bool(re.match(r"^[A-Za-zÀ-ÿ0-9' -]{3,50}$", value))
+
+def is_valid_message(value):
+    return bool(re.match(r"^[A-Za-zÀ-ÿ0-9.,!?()' \n\r-]{5,500}$", value)) and not is_random_text(value)
+
+def is_random_text(value):
+    if len(value.split()) < 3:  # Trop court
+        return True
+    if re.search(r"(\w)\1\1", value):  # Séquences répétées
+        return True
+    return False
+
 @main.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'POST':
-        nom = request.form.get('nom')
-        email = request.form.get('email')
-        sujet = request.form.get('sujet')
-        message = request.form.get('message')
+        nom = request.form.get('nom', '').strip()
+        email = request.form.get('email', '').strip()
+        sujet = request.form.get('sujet', '').strip()
+        message = request.form.get('message', '').strip()
 
-        # Si vous souhaitez enregistrer le message dans la base de données
+        # Valider chaque champ
+        if not is_valid_name(nom):
+            flash("Le nom est invalide. Veuillez utiliser uniquement des lettres.", "danger")
+            return redirect(url_for('main.contact'))
+
+        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
+            flash("L'email est invalide. Veuillez fournir une adresse email valide.", "danger")
+            return redirect(url_for('main.contact'))
+
+        if not is_valid_subject(sujet):
+            flash("Le sujet est invalide. Évitez les suites de lettres aléatoires.", "danger")
+            return redirect(url_for('main.contact'))
+
+        if not is_valid_message(message):
+            flash("Le message est invalide. Évitez les suites de lettres aléatoires.", "danger")
+            return redirect(url_for('main.contact'))
+
+        # Sauvegarder dans la base de données et envoyer l'email
         contact_message = ContactMessage(nom=nom, email=email, sujet=sujet, message=message)
         contact_message.save()
 
-        # Construire le corps de l'email avec le nom et l'email de l'expéditeur
         email_body = f"Nom: {nom}\nEmail: {email}\n\nMessage:\n{message}"
-
-        # Envoyer l'email avec les informations de contact
         send_email(sujet, current_app.config['MAIL_DEFAULT_SENDER'], [current_app.config['MAIL_DEFAULT_SENDER']], email_body)
 
         flash("Votre message a été envoyé avec succès. Nous vous contacterons bientôt.", "success")
         return redirect(url_for('main.contact'))
 
     return render_template('fasto/contacts.html')
+
 
 def send_email(subject, sender, recipients, body):
     msg = Message(subject, sender=sender, recipients=recipients)
@@ -1068,7 +1317,7 @@ def convert_image_to_base64(formateurs):
 # Route pour afficher la liste des formateurs
 @main.route('/view_formateurs')
 def view_formateurs():
-    formateurs = list(current_app.db.users.find({"role": "formateur"}))
+    formateurs = list(current_app.db.users.find({"role": {"$regex": "formateur"}}))
 
     # Convertir les images en base64
     formateurs = convert_image_to_base64(formateurs)
@@ -1092,7 +1341,7 @@ def admin_generate_code():
     if not formateur_id:
         return jsonify(success=False, message="ID du formateur manquant"), 400
 
-    formateur = current_app.db.users.find_one({"_id": ObjectId(formateur_id), "role": "formateur"})
+    formateur = current_app.db.users.find_one({"_id": ObjectId(formateur_id), "role": {"$regex": "formateur"}})
     if not formateur:
         return jsonify(success=False, message="Formateur non trouvé"), 404
 
@@ -1112,11 +1361,11 @@ def admin_generate_code():
     Ci-dessous, un modèle d'email que vous pouvez utiliser pour contacter les écoles :
 
     ---------------------------------------------------
-    Objet : Demande de participation à l’évaluation pour ma labellisation LFP2024
+    Objet : Demande de participation à l’évaluation pour ma labellisation LSSP2024
 
     Bonjour [Nom de la personne ou du responsable de l'école],
 
-    Je me permets de vous contacter dans le cadre de mon processus de labellisation auprès de l'Institut de Labélisation Français (ILF) pour obtenir le label LFP2024 : Label de Formateurs Professionnelles. Actuellement en cours d’évaluation, l’une des étapes indispensables consiste à recueillir des retours d’établissements avec lesquels j’ai collaboré.
+    Je me permets de vous contacter dans le cadre de mon processus de labellisation auprès de l'Institut de Labélisation Français (ILF) pour obtenir le label LSSP2024 : Label de Softs Skills Profesionnelles. Actuellement en cours d’évaluation, l’une des étapes indispensables consiste à recueillir des retours d’établissements avec lesquels j’ai collaboré.
 
     Je vous sollicite donc pour participer à cette démarche en remplissant un court questionnaire, qui permettra de valider mon dossier de labellisation en évaluant la qualité de mes interventions. Votre retour est crucial pour m’aider à obtenir cette certification.
 
@@ -1133,7 +1382,7 @@ def admin_generate_code():
 
     Bien cordialement,
     {formateur['prenom']} {formateur['nom']}
-    Formateur en cours de labellisation LFP2024
+    Formateur en cours de labellisation LSSP2024
     [Vos coordonnées]
     ---------------------------------------------------
 
@@ -1145,5 +1394,69 @@ def admin_generate_code():
 
     send_email(subject, current_app.config['MAIL_DEFAULT_SENDER'], [formateur['email']], body)
 
-    return jsonify(success=True, message="Code généré et envoyé avec succès.")
+    return redirect(url_for('main.admin_dashboard'))
+
+
+
+@main.route('/admin/affiliations')
+@login_required
+def admin_affiliations():
+    if current_user.role != 'admin':
+        return "Unauthorized", 403
+
+    # Récupérer tous les ambassadeurs et leurs formateurs affiliés
+    ambassadors = current_app.db.users.find({"role": "ambassadeur"})
+
+    # Préparer les données pour chaque ambassadeur
+    data = []
+    for ambassador in ambassadors:
+        affiliated_users = current_app.db.users.find({"email": {"$in": ambassador.get("affiliated_users", [])}})
+        data.append({
+            "ambassador": ambassador,
+            "affiliated_users": affiliated_users
+        })
+
+    return render_template("fasto/admin_affiliations.html", data=data)
+
+@main.route('/admin_assign_ambassador', methods=['POST'])
+@login_required
+def admin_assign_ambassador():
+    if current_user.role != 'admin':
+        return jsonify(success=False, message="Non autorisé"), 403
+
+    formateur_id = request.form.get('formateur_id')
+    if not formateur_id:
+        return jsonify(success=False, message="ID du formateur manquant"), 400
+
+    # Récupérer le formateur dans la base de données
+    formateur = current_app.db.users.find_one({"_id": ObjectId(formateur_id)})
+    if not formateur:
+        return redirect(url_for('main.admin_dashboard'))
+
+    # Récupérer ou initialiser l'attribut `roles`
+    current_role = formateur.get("role","formateur")
+    if "ambassadeur" in current_role:
+        flash("Ce formateur est déjà ambassadeuur.", "info")
+        return redirect(url_for('main.admin_dashboard'))
+
+    updated_role = f"{current_role},ambassadeur" if current_role else "ambassadeur"
+
+    # Générer un code unique pour l'affiliation
+    code_affiliation = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+
+    # Mettre à jour les rôles et ajouter le code unique
+    current_app.db.users.update_one(
+        {"_id": ObjectId(formateur_id)},
+        {
+            "$set": {
+                "role": updated_role,
+                "unique_code": code_affiliation
+            }
+        }
+    )
+
+    # Envoyer un email ou retourner un message
+    flash("Le rôle d'ambassadeur a été ajouté avec succès et le code d'affiliation généré.", "success")
+    return redirect(url_for('main.admin_dashboard'))
 

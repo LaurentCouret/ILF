@@ -1,3 +1,4 @@
+#email.py
 from flask_mail import Message
 from flask import url_for, render_template, current_app
 from itsdangerous import URLSafeTimedSerializer
@@ -21,6 +22,21 @@ def send_email(to, subject, template):
         subject,
         recipients=[to],
         html=template,
+        sender=current_app.config['MAIL_DEFAULT_SENDER']
+    )
+    mail.send(msg)
+
+def send_discord_invitation_email(user_email):
+    discord_invitation_link = "https://discord.gg/drxQHshQsn"  
+    html = render_template(
+        'email_discord_invitation.html',
+        discord_link=discord_invitation_link
+    )
+    subject = "Bienvenue dans la communauté Adopte des Soft Skills - Invitation Discord"
+    msg = Message(
+        recipients=[user_email],
+        subject=subject,
+        html=html,
         sender=current_app.config['MAIL_DEFAULT_SENDER']
     )
     mail.send(msg)

@@ -4,48 +4,16 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Institut Labélisation Français</title>
+    <title>Institut Labélisation Français - Inscription École</title>
 
     <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='fasto/images/favicon.png')}}" />
     <link rel="stylesheet" href="{{ url_for('static', filename='fasto/vendor/bootstrap-select/dist/css/bootstrap-select.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='fasto/css/style.css')}}">
-
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="https://unpkg.com/feather-icons" defer></script>
     
     <style>
-        /* CSS personnalisé pour l'autocomplétion */
-        .ui-autocomplete {
-            position: absolute;
-            z-index: 1000;
-            cursor: default;
-            padding: 0;
-            margin-top: 2px;
-            list-style: none;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .ui-autocomplete .ui-menu-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .ui-autocomplete .ui-menu-item:hover {
-            background-color: #f0f0f0;
-        }
-
-        .ui-autocomplete .ui-state-focus {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .ui-helper-hidden-accessible {
-            display: none;
-        }
-
+        /* Personnalisation du formulaire */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -69,12 +37,12 @@
         }
 
         .password-container input {
-            padding-right: 40px; /* Espace pour l'icône */
+            padding-right: 40px;
         }
 
         .password-icon {
             position: absolute;
-            top: 50%;
+            top: 68%;
             right: 10px;
             transform: translateY(-50%);
             cursor: pointer;
@@ -82,6 +50,11 @@
 
         .password-icon i {
             font-size: 20px;
+        }
+
+        .error-message {
+            color: red;
+            display: none;
         }
     </style>
 </head>
@@ -95,10 +68,10 @@
                             <div class="col-xl-12">
                                 <div class="auth-form">
                                     <div class="text-center mb-3">
-                                        <img src="{{ url_for('static', filename='fasto/images/logo-full.png')}}" alt="">
+                                        <img src="{{ url_for('static', filename='fasto/images/logo.png')}}" alt="Logo">
                                     </div>
-                                    <h4 class="text-center mb-4">Inscrivez-vous à votre compte</h4>
-                                    
+                                    <h4 class="text-center mb-4">Inscription École</h4>
+
                                     {% with messages = get_flashed_messages(with_categories=true) %}
                                       {% if messages %}
                                         <div class="container mt-3">
@@ -111,57 +84,79 @@
                                         </div>
                                       {% endif %}
                                     {% endwith %}
-                                    
-                                    <form action="/register-ecole" method="POST">
+
+                                    <form action="/register-ecole" method="POST" id="registrationForm">
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Nom</strong></label>
-                                            <input type="text" name="nom" class="form-control" placeholder="Nom" required>
+                                            <input type="text" id="nom" name="nom" class="form-control" placeholder="Nom" required>
+                                            <small class="error-message" id="nomError">Nom invalide. Utilisez uniquement des lettres.</small>
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Prénom</strong></label>
-                                            <input type="text" name="prenom" class="form-control" placeholder="Prénom" required>
+                                            <input type="text" id="prenom" name="prenom" class="form-control" placeholder="Prénom" required disabled>
+                                            <small class="error-message" id="prenomError">Prénom invalide.</small>
                                         </div>
                                         <div class="form-group">
-                                            <label class="mb-1"><strong>Statut</strong></label>
-                                            <input type="text" name="status" class="form-control" placeholder="Statut" required>
+                                            <label class="mb-1"><strong>Statut dans l'entreprise</strong></label>
+                                            <input type="text" id="status" name="status" class="form-control" placeholder="Statut" required disabled>
+                                            <small class="error-message" id="statusError">Statut invalide.</small>
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>École</strong></label>
-                                            <input type="text" id="ecole" name="ecole" class="form-control" placeholder="École" required>
+                                            <input type="text" id="ecole" name="ecole" class="form-control" placeholder="École" required disabled>
+                                            <small class="error-message" id="ecoleError">École invalide.</small>
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Email</strong></label>
-                                            <input type="email" name="email" class="form-control" placeholder="Email" required>
+                                            <input type="email" id="email" name="email" class="form-control" placeholder="Email" required disabled>
+                                            <small class="error-message" id="emailError">Email invalide.</small>
                                         </div>
                                         <div class="form-group">
                                             <label class="mb-1"><strong>Confirmez Email</strong></label>
-                                            <input type="email" name="confirm_email" class="form-control" placeholder="Confirmez Email" required>
+                                            <input type="email" id="confirm_email" name="confirm_email" class="form-control" placeholder="Confirmez Email" required disabled>
+                                            <small class="error-message" id="confirmEmailError">Les emails ne correspondent pas.</small>
                                         </div>
-                                            <!-- Mot de passe -->
+
+                                        <!-- Mot de passe -->
                                         <div class="mb-3 password-container">
                                             <label for="password" class="form-label">Mot de passe</label>
-                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <input type="password" class="form-control" id="password" name="password" required disabled>
                                             <div class="password-icon" id="toggle-password">
                                                 <i id="eye" data-feather="eye"></i>
                                             </div>
+                                            <small class="error-message" id="passwordError">
+                                                Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.
+                                            </small>
                                         </div>
 
                                         <!-- Confirmation du mot de passe -->
                                         <div class="mb-3 password-container">
                                             <label for="confirm_password" class="form-label">Confirmer votre mot de passe</label>
-                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required disabled>
                                             <div class="password-icon" id="toggle-confirm-password">
                                                 <i id="eye-confirm" data-feather="eye"></i>
                                             </div>
+                                            <small class="error-message" id="confirmPasswordError">Les mots de passe ne correspondent pas.</small>
                                         </div>
-                                        <div class="form-group">
-                                            <label class="mb-1"><strong>Téléphone</strong></label>
-                                            <input type="text" name="telephone" class="form-control" placeholder="Téléphone" required>
+
+                                        <!-- Checkbox pour accepter les termes -->
+                                        <div class="form-group terms-container">
+                                            <input type="checkbox" id="terms" name="terms" required disabled>
+                                            <label for="terms">
+                                                J'ai lu et j'accepte les 
+                                                <a href="../../../static/fasto/admnistratif/CGU - Institut de Labélisation Français - 2024-10-21T14_53_49Z.pdf" target="_blank">CGU</a>, 
+                                                <a href="../../../static/fasto/admnistratif/CGV_Institut_Labélisation_Français.pdf" target="_blank">CGV</a>, 
+                                                et la <a href="../../../static/fasto/admnistratif/Institut de Labélisation Français - Politique de confidentialité - 2024-10-21T15_00_25Z.pdf" target="_blank">Mentions légales</a>.
+                                            </label>
                                         </div>
+                                        <!-- reCAPTCHA -->
+                                        <div class="g-recaptcha" data-sitekey="6LfEyXsqAAAAAO3EcFf9XL2ZnQ3wr2gVZNEuKf-c" data-callback="onRecaptchaSuccess" data-expired-callback="onRecaptchaExpired"></div>
+
                                         <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-primary btn-block">Inscription</button>
+                                            <button type="submit" class="btn btn-primary btn-block" id="submitButton" disabled>Inscription</button>
                                         </div>
                                     </form>
+
                                     <div class="new-account mt-3">
                                         <p>Déjà un compte? <a class="text-primary" href="{{ url_for('main.page_login') }}">Connexion</a></p>
                                     </div>
@@ -177,62 +172,135 @@
     <script src="{{ url_for('static', filename='fasto/vendor/global/global.min.js')}}"></script>
     <script src="{{ url_for('static', filename='fasto/js/custom.min.js')}}"></script>
     <script src="{{ url_for('static', filename='fasto/js/deznav-init.js')}}"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
     <script>
-        $(function() {
-            $("#ecole").autocomplete({
-                source: function(request, response) {
-                    $.ajax({
-                        url: "/autocomplete_schools",
-                        data: {
-                            query: request.term
-                        },
-                        success: function(data) {
-                            response(data);
-                        }
-                    });
-                },
-                minLength: 2,
-                select: function(event, ui) {
-                    $("#ecole").val(ui.item.label);
-                    return false;
-                }
-            }).autocomplete("instance")._renderItem = function(ul, item) {
-                var label = $("<div>").text(item.label);
-                return $("<li>")
-                    .append(label)
-                    .appendTo(ul);
-            };
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
-            const togglePassword = document.querySelector("#toggle-password");
-            const passwordField = document.querySelector("#password");
+            
+            const fields = ["nom", "prenom", "status", "ecole", "email", "confirm_email", "password", "confirm_password"];
+            const termsCheckbox = document.getElementById("terms");
+            const submitButton = document.getElementById("submitButton");
 
-            const toggleConfirmPassword = document.querySelector("#toggle-confirm-password");
-            const confirmPasswordField = document.querySelector("#confirm_password");
+            // Regex pour les règles de base de chaque champ
+            const patterns = {
+                nom: /^[A-Za-zÀ-ÿ' -]{2,}$/,
+                prenom: /^[A-Za-zÀ-ÿ' -]{2,}$/,
+                status: /^[A-Za-zÀ-ÿ' -]{2,}$/,
+                ecole: /^[A-Za-zÀ-ÿ' -]{2,}$/,
+                email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                confirm_email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                password: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*])[A-Za-z\d!@#\$%\^&\*]{8,}$/,
+                confirm_password: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*])[A-Za-z\d!@#\$%\^&\*]{8,}$/
+            };
 
-            // Pour le mot de passe
-            togglePassword.addEventListener("click", () => {
-                const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
-                passwordField.setAttribute("type", type);
+             // Validation du reCAPTCHA
+             function checkRecaptcha() {
+                const recaptchaResponse = grecaptcha.getResponse();
+                submitButton.disabled = recaptchaResponse.length === 0;
+            }
 
-                togglePassword.innerHTML = type === "password" ? '<i id="eye" data-feather="eye"></i>' : '<i id="eye" data-feather="eye-off"></i>';
-                
-                feather.replace(); // Remplacer les icônes
+            function onRecaptchaSuccess() {
+                checkRecaptcha();
+            }
+
+            function onRecaptchaExpired() {
+                checkRecaptcha();
+            }
+
+            setInterval(checkRecaptcha, 500);
+
+            function isRandomText(value) {
+                if (/(\w)\1\1/.test(value)) return true;
+                const hasVowels = /[aeiouyAEIOUY]/.test(value);
+                return !hasVowels;
+            }
+
+            fields.forEach((fieldId, index) => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(fieldId + 'Error');
+                const nextField = fields[index + 1] ? document.getElementById(fields[index + 1]) : null;
+
+                field.addEventListener('input', function() {
+                    const isValid = patterns[fieldId].test(field.value) && !isRandomText(field.value);
+
+                    if (isValid) {
+                        if (errorElement) {
+                            errorElement.style.display = 'none';
+                        }
+                        if (nextField) {
+                            nextField.disabled = false;
+                        }
+                    } else {
+                        if (errorElement) {
+                            errorElement.textContent = "Entrée invalide. Veuillez respecter les règles d'entrée.";
+                            errorElement.style.display = 'block';
+                        }
+                        if (nextField) {
+                            nextField.disabled = true;
+                        }
+                    }
+
+                    if (fieldId === "confirm_email") {
+                        checkEmailMatch();
+                    } else if (fieldId === "confirm_password") {
+                        checkPasswordMatch();
+                    }
+
+                    checkFormCompletion();
+                });
             });
 
-            // Pour le champ de confirmation de mot de passe
-            toggleConfirmPassword.addEventListener("click", () => {
-                const type = confirmPasswordField.getAttribute("type") === "password" ? "text" : "password";
-                confirmPasswordField.setAttribute("type", type);
+            function checkEmailMatch() {
+                const email = document.getElementById("email").value;
+                const confirmEmail = document.getElementById("confirm_email").value;
+                const confirmEmailError = document.getElementById("confirmEmailError");
 
-                toggleConfirmPassword.innerHTML = type === "password" ? '<i id="eye-confirm" data-feather="eye"></i>' : '<i id="eye-confirm" data-feather="eye-off"></i>';
-                
-                feather.replace(); // Remplacer les icônes
+                if (email !== confirmEmail) {
+                    confirmEmailError.style.display = 'block';
+                    confirmEmailError.textContent = "Les emails ne correspondent pas.";
+                    return false;
+                } else {
+                    confirmEmailError.style.display = 'none';
+                    return true;
+                }
+            }
+
+            function checkPasswordMatch() {
+                const password = document.getElementById("password").value;
+                const confirmPassword = document.getElementById("confirm_password").value;
+                const confirmPasswordError = document.getElementById("confirmPasswordError");
+
+                if (!patterns.password.test(password)) {
+                    document.getElementById("passwordError").style.display = 'block';
+                    document.getElementById("passwordError").textContent = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial.";
+                    return false;
+                } else {
+                    document.getElementById("passwordError").style.display = 'none';
+                }
+
+                if (password !== confirmPassword) {
+                    confirmPasswordError.style.display = 'block';
+                    confirmPasswordError.textContent = "Les mots de passe ne correspondent pas.";
+                    return false;
+                } else {
+                    confirmPasswordError.style.display = 'none';
+                    return true;
+                }
+            }
+
+            function checkFormCompletion() {
+                const allValid = fields.every(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    return patterns[fieldId].test(field.value) && !isRandomText(field.value);
+                }) && checkEmailMatch() && checkPasswordMatch();
+
+                // Activer la case à cocher des termes si tous les champs sont valides
+                termsCheckbox.disabled = !allValid;
+                submitButton.disabled = !allValid || !termsCheckbox.checked;
+            }
+
+            termsCheckbox.addEventListener('change', function() {
+                submitButton.disabled = !this.checked;
             });
-
-            feather.replace(); // Initialisation de Feather Icons
         });
     </script>
 </body>

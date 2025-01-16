@@ -1,0 +1,29 @@
+{% extends "fasto/elements/layouts/admin.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Tableau des Affiliations</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ambassadeur</th>
+                <th>Formateurs Affiliés</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in data %}
+                <tr>
+                    <td> Ambassadeur : {{ item.ambassador.nom }} {{ item.ambassador.prenom }}</td>
+                    <td>
+                        <ul>
+                            Formateur : {% for formateur in item.affiliated_users %}
+                                <li>{{ formateur.nom }} {{ formateur.prenom }} ({{ formateur.email }})</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -58,6 +58,16 @@
                     Accéder au profil
                 </a>
             </div>
+            {% if user.role == "ambassadeur" %}
+                <div>
+                    <h3>Code d'affiliation</h3>
+                    {% if user.unique_code %}
+                        <p>{{ user.unique_code }}</p>
+                    {% else %}
+                        <p>Le code d'affiliation n'a pas encore été généré.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- User Status Section -->

@@ -405,6 +405,8 @@ header {
 .partner-info img {
   border-radius: 50%;
   margin-right: 20px;
+  width: 150px;
+  height: 150px;
 }
 
 .partner-info p {
@@ -950,12 +952,20 @@ p {
   color: #fff;
 }
 
+.person-container {
+  display: flex;
+  gap: 20px; 
+  justify-content: center; 
+  flex-wrap: wrap; 
+}
+
 .person {
   align-items: center;
   display: flex;
   flex-direction: column;
   width: 280px;
 }
+
 #partenariat {
   border-radius: 50%;
   height: 312px;
@@ -963,7 +973,9 @@ p {
   transform: scale(0.48);
   transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
   width: 400px;
+  position: relative; 
 }
+
 #partenariat:after {
   background-color: #f2f2f2;
   content: "";
@@ -983,6 +995,7 @@ p {
   transform-origin: 50%;
   top: -200px;
 }
+
 .circle {
   background-color: #fee7d3;
   border-radius: 50%;
@@ -994,6 +1007,7 @@ p {
   top: 210px;
   width: 380px;
 }
+
 .img {
   pointer-events: none;
   position: relative;
@@ -1001,6 +1015,7 @@ p {
   transform-origin: 50% bottom;
   transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 #partenariat:hover .img {
   transform: translateY(0) scale(1.2);
 }
@@ -1010,36 +1025,42 @@ p {
   width: 340px;
 }
 .img2 {
-  left: -46px;
-  top: 174px;
-  width: 444px;
+  top: 269px;
+  height: 300px;
+  left: 50px;
 }
 .img3 {
-  left: -124px;
+  left: -184px;
   top: 210px;
+  height: 450px;
 }
+
 .divider {
   background-color: #ca6060;
   height: 1px;
   width: 160px;
 }
+
 .name-container {
   display: flex;
   align-items: center;
+  max-width: 200px; 
+  text-align: center;
 }
+
 .name {
   color: #404245;
-  font-size: 36px;
+  font-size: 24px; 
   font-weight: 600;
   margin-top: 16px;
-  text-align: center;
-  
 }
+
 .name-logo {
-  width: 50px; /* Taille du logo */
-  height: 50px;
-  margin-left: -30px;
+  width: 60px; 
+  height: 60px;
+  margin-left: 5px; 
 }
+
 .title {
   color: #6e6e6e;
   font-family: arial;
@@ -1047,8 +1068,8 @@ p {
   font-style: italic;
   margin-top: 4px;
   margin-left: 20px;
+  text-align: center; 
 }
-
 
 
 #confiance{
@@ -1239,4 +1260,127 @@ p {
 
 .tab-content p {
   color: #2F3061;
+}
+
+
+
+.ambassador-section {
+  text-align: center;
+  margin: 50px 0;
+}
+
+.ambassadors {
+  display: flex;
+  justify-content: center;
+  gap: 30px;  /* Espace entre les cartes */
+  flex-wrap: wrap;
+}
+
+.ambassador-card {
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 250px;  /* Largeur fixe pour uniformiser */
+  padding: 20px;
+  text-align: center;
+}
+
+.ambassador-card img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;  /* Pour un effet de cercle */
+  margin-bottom: 20px;
+}
+
+.ambassador-card p {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+}
+
+.ambassador-card strong {
+  font-size: 16px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+
+
+
+.referentiel-section {
+  background-color: #f9f9f9;
+  padding: 20px;
+  text-align: center;
+  margin: 20px 0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.referentiel-section h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.referentiel-section p {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.referentiel-section .btn-download {
+  display: inline-block;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.referentiel-section .btn-download:hover {
+  background-color: #0056b3;
+}
+
+.referentiel-section .btn-download i {
+  margin-right: 10px;
+}
+
+.benefit li{
+  list-style: none;
+}
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #25d366;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  background-color: #20b858;
+}
+
+.whatsapp-float a {
+  color: white;
+  font-size: 28px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

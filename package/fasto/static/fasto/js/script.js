@@ -105,3 +105,6 @@ document.querySelectorAll('.tab').forEach(tab => {
     document.querySelectorAll('.tab-pane')[index].classList.add('active');
   });
 });
+
+
+f

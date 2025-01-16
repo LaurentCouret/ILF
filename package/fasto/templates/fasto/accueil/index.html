@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
   <link rel="icon" type="image/png" href="../../../static/fasto/images/img/Favicon.png" />
   <link rel="stylesheet" href="../../../static/fasto/css/styleAccueil.css">
   <title>Institut de Labelisation Français</title>
@@ -21,6 +22,7 @@
           <li><a href="{{ url_for('main.notrehistoire') }}">Notre Histoire</a></li>
           <li><a href="{{ url_for('main.partenariat') }}">Partenariat</a></li>
           <li><a href="{{ url_for('main.nousrejoindre') }}">Nous Rejoindre</a></li>
+          <li><a href="{{ url_for('main.discord') }}">Communauté Discord</a></li>
           <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
           <li><a href="{{ url_for('main.page_login') }}" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
           <li><a href="{{ url_for('main.page_register_choice') }}" class="btn-primary"><i class="fas fa-user-plus"></i> Inscription</a></li>
@@ -32,6 +34,14 @@
       <div class="line"></div>
     </header>
 
+
+    <div class="whatsapp-float">
+      <a href="https://wa.me/+33662483678?text=Bonjour%2C%20je%20souhaite%20avoir%20plus%20d%27informations%20concernant%20vos%20services." target="_blank">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+    </div>
+    
+    
  
   <!-- SECTION N°1 -->
   <main>
@@ -134,12 +144,11 @@
     <p class="sub-title">Ces écoles nous font confiance...</p>
     <div class="partner-logos">
       <img src="../../../static/fasto/images/img/LessonSharing logo - v4-circle - BLUE (RGBA).png" alt="Logo Partenaire 1">
-      <img src="logo2.png" alt="Logo Partenaire 2">
-      <img src="logo3.png" alt="Logo Partenaire 3">
+      <!-- <img src="../../../static/fasto/images/img/Cyber_IA_Responsable_logo.jpg" alt="Logo Partenaire 2"> -->
     </div>
 
     <div class="main-partner">
-      <h3>Notre Partenaire Principal</h3>
+      <h3>Nos Principaux Partenaires</h3>
       <div class="writing-effect">
         <span>Nous collaborons avec des experts de renom pour garantir l'excellence de notre label.</span>
       </div>
@@ -150,7 +159,32 @@
     </div>
   </section>
 
-  <!-- SECTION N°5 -->
+
+<!-- SECTION N°5 -->
+<section class="ambassador-section">
+  <h2 class="section-title">Nos Ambassadeurs</h2>
+  <p class="sub-title">Ces ambassadeurs portent haut les valeurs de notre label...</p>
+
+  <!-- Liste des ambassadeurs -->
+  <div class="ambassadors">
+    <div class="ambassador-card">
+      <img src="../../../static/fasto/images/marion.png" alt="Photo de l'ambassadeur Marion Tiberti">
+      <p><strong>Dr. Marion Tiberti</strong><br>Secteur d'activité : <br/> Formation en programmation Python, analyse de données, et développement d'automatisation et d'IA (machine et deep learning) pour étudiants et entreprises.</p>
+    </div>
+    <!-- <div class="ambassador-card">
+      <img src="../../../static/fasto/images/sandra.png" alt="Photo de l'ambassadeur Sandra Smadja">
+      <p><strong>Sandra Smadja</strong><br>Secteur d'activité : <br/> Formation en Art, Design, Création Digital, Marketing et Communication.</p>
+    </div>-->
+    <div class="ambassador-card">
+      <img src="../../../static/fasto/images/magali-milbergue.png" alt="Photo de l'ambassadeur Magali Milbergue">
+      <p><strong>Magali Milbergue</strong><br>Secteur d'activité : <br/> Formatrice développement web & Conférencière</p>
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- SECTION N°6 -->
 
   <div class="animated-background">
     <div class="content">
@@ -173,23 +207,24 @@
         </p>
         <div class="contact">
           <span><i class="fas fa-map-marker-alt"></i> 10 rue de Penthièvre 75008 Paris, France</span>
-          <span><i class="fas fa-envelope"></i> contact@institutdelabelisation.fr</span>
+          <span><i class="fas fa-envelope"></i> contact@institutdelabelisationfrancais.fr</span>
         </div>
       </div>
 
       <div class="footer-section links">
         <h3>Liens Utiles</h3>
         <ul>
-          <li><a href="#">Mentions légales</a></li>
-          <li><a href="#">CGU</a></li>
-          <li><a href="#">Contact</a></li>
+          <li><a href="../../../static/fasto/admnistratif/Institut de Labélisation Français - Politique de confidentialité - 2024-10-21T15_00_25Z.pdf" download="Institut de Labélisation Français - Politique de confidentialité - 2024-10-21T15_00_25Z.pdf">Mentions légales</a></li>
+          <li><a href="../../../static/fasto/admnistratif/CGU - Institut de Labélisation Français - 2024-10-21T14_53_49Z.pdf" download="CGU - Institut de Labélisation Français - 2024-10-21T14_53_49Z.pdf">CGU</a></li>
+          <li><a href="../../../static/fasto/admnistratif/CGV_Institut_Labélisation_Français.pdf" download="CGV_Institut_Labélisation_Français.pdf">CGV</a></li>
+          <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
         </ul>
       </div>
 
       <div class="footer-section social">
         <h3>Suivez-nous</h3>
         <div class="social-icons">
-          <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.linkedin.com/company/institut-de-labelisation-fran%C3%A7ais"><i class="fab fa-linkedin"></i></a>
         </div>
       </div>
     </div>
@@ -200,7 +235,34 @@
   </footer>
 
 
+<script>
+window.addEventListener("pagehide", function() {
+    const duration = (Date.now() - performance.timing.navigationStart) / 1000;
 
+    console.log(`Durée de visite : ${duration} secondes`);
+
+    fetch('/end_visit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },  
+        body: JSON.stringify({ duration: duration })  
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Requête envoyée avec succès");
+        } else {
+            console.error("Erreur lors de l'envoi de la requête", response.status);
+        }
+    })
+    .catch(error => {
+        console.error("Erreur lors de l'envoi de la requête", error);
+    });
+});
+
+
+
+
+</script>
+    
 
 </body>
 

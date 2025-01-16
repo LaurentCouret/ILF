@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Confirmation de votre email</title>
+    <title>Invitation à rejoindre notre Discord</title>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -21,7 +21,7 @@
             overflow: hidden;
         }
         .email-header {
-            background-color: #2c3e50;
+            background-color: #7289DA;
             color: #ffffff;
             padding: 20px;
             text-align: center;
@@ -33,17 +33,25 @@
             padding: 20px;
             color: #333333;
         }
+        .email-body h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
         .email-body p {
             margin-bottom: 20px;
+            font-size: 16px;
         }
         .email-body a {
             display: inline-block;
-            background-color: #3498db;
+            background-color: #7289DA;
             color: #ffffff;
             text-decoration: none;
             padding: 10px 20px;
             border-radius: 5px;
             font-weight: bold;
+            font-size: 16px;
         }
         .email-footer {
             background-color: #2c3e50;
@@ -59,17 +67,18 @@
         <!-- Header -->
         <div class="email-header">
             <img src="https://institutdelabelisationfrancais.com/static/fasto/images/img/logo.png" alt="Institut de Labélisation Français">
-            <h1>Confirmation de votre email</h1>
+            <h1>Invitation à rejoindre notre Discord</h1>
         </div>
 
         <!-- Body -->
         <div class="email-body">
-            <p>Bonjour,</p>
-            <p>Merci de vous être inscrit à l'Institut de Labélisation Français. Pour finaliser votre inscription et accéder à votre espace personnel, veuillez confirmer votre adresse email en cliquant sur le bouton ci-dessous :</p>
+            <h1>Bienvenue dans la communauté Adopte des Soft Skills !</h1>
+            <p>Nous sommes ravis de vous compter parmi nous. Rejoignez notre serveur Discord pour échanger avec d'autres formateurs, formatrices et prestataires externes.</p>
             <p style="text-align: center;">
-                <a href="{{ confirm_url }}" target="_blank">Confirmer mon email</a>
+                <a href="{{ discord_link }}" target="_blank">Rejoindre le Discord</a>
             </p>
-            <p>Cordialement,<br>L'équipe de l'Institut de Labélisation Français</p>
+            <p>Nous avons hâte de vous voir dans notre communauté et d'échanger avec vous. N'hésitez pas à poser vos questions ou à partager vos expériences !</p>
+            <p>À bientôt,<br>L'équipe de l'Institut de Labélisation Français</p>
         </div>
 
         <!-- Footer -->

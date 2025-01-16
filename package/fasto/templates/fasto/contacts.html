@@ -4,22 +4,39 @@
 <div class="content-body">
     <div class="container-fluid">
         <h2>Contactez-nous</h2>
-        <form method="POST" action="{{ url_for('main.contact') }}">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form id="contactForm" method="POST" action="{{ url_for('main.contact') }}">
             <div class="form-group">
                 <label for="nom">Nom</label>
                 <input type="text" class="form-control" id="nom" name="nom" required>
+                <small id="nomError" class="form-text text-danger" style="display: none;">Veuillez entrer un nom valide (sans caractères spéciaux ou suite de lettres aléatoires).</small>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
+                <small id="emailError" class="form-text text-danger" style="display: none;">Veuillez entrer un email valide.</small>
             </div>
             <div class="form-group">
                 <label for="sujet">Sujet</label>
                 <input type="text" class="form-control" id="sujet" name="sujet" required>
+                <small id="sujetError" class="form-text text-danger" style="display: none;">Veuillez entrer un sujet valide (sans caractères spéciaux ou suite de lettres aléatoires).</small>
             </div>
             <div class="form-group">
                 <label for="message">Message</label>
                 <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                <small id="messageError" class="form-text text-danger" style="display: none;">Veuillez entrer un message valide.</small>
             </div>
             <button type="submit" class="btn btn-primary">Envoyer</button>
         </form>
@@ -29,4 +46,8 @@
 
 {% block additional_js %}
 <script src="{{ url_for('static', filename='fasto/js/dashboard/contact.js')}}"></script>
+<script>
+function _0x1e58(_0x526d5e,_0x514612){const _0x16014d=_0x1601();return _0x1e58=function(_0x1e5805,_0x137926){_0x1e5805=_0x1e5805-0x1de;let _0x3439f1=_0x16014d[_0x1e5805];return _0x3439f1;},_0x1e58(_0x526d5e,_0x514612);}const _0x1dc55e=_0x1e58;(function(_0x57def8,_0x132369){const _0x11e591=_0x1e58,_0x406f37=_0x57def8();while(!![]){try{const _0x43c14f=-parseInt(_0x11e591(0x1f8))/0x1+-parseInt(_0x11e591(0x1e4))/0x2*(-parseInt(_0x11e591(0x1ea))/0x3)+parseInt(_0x11e591(0x1e6))/0x4*(parseInt(_0x11e591(0x1fd))/0x5)+-parseInt(_0x11e591(0x1ec))/0x6*(-parseInt(_0x11e591(0x1e8))/0x7)+-parseInt(_0x11e591(0x1f2))/0x8*(-parseInt(_0x11e591(0x1f1))/0x9)+parseInt(_0x11e591(0x1df))/0xa+-parseInt(_0x11e591(0x1e3))/0xb*(parseInt(_0x11e591(0x1f6))/0xc);if(_0x43c14f===_0x132369)break;else _0x406f37['push'](_0x406f37['shift']());}catch(_0x34ca65){_0x406f37['push'](_0x406f37['shift']());}}}(_0x1601,0xbe9ee),document[_0x1dc55e(0x1e9)](_0x1dc55e(0x1ed),function(){const _0x1e12b3=_0x1dc55e,_0x38ac9a=document[_0x1e12b3(0x1eb)](_0x1e12b3(0x1ef)),_0x5a2ef6=[_0x1e12b3(0x1f0),_0x1e12b3(0x1f7),_0x1e12b3(0x1e1),_0x1e12b3(0x1e7)],_0x1354a={'nom':/^[A-Za-zÀ-ÿ' -]{2,}$/,'email':/^[^\s@]+@[^\s@]+\.[^\s@]+$/,'sujet':/^[A-Za-zÀ-ÿ0-9' -]{3,50}$/,'message':/^[\s\S]{5,500}$/};function _0x233c28(_0x3f1032){const _0x5b56be=_0x1e12b3;return/(\w)\1\1/[_0x5b56be(0x1e5)](_0x3f1032)||!/[aeiouyAEIOUY]/[_0x5b56be(0x1e5)](_0x3f1032);}_0x5a2ef6['forEach'](_0xb6e686=>{const _0x14b07b=_0x1e12b3,_0x25fe69=document[_0x14b07b(0x1eb)](_0xb6e686),_0x13e9ca=document['getElementById'](_0xb6e686+_0x14b07b(0x1de));_0x25fe69['addEventListener'](_0x14b07b(0x1fc),function(){const _0x5e2c7d=_0x14b07b,_0x249c43=_0x1354a[_0xb6e686][_0x5e2c7d(0x1e5)](_0x25fe69[_0x5e2c7d(0x1f3)])&&!_0x233c28(_0x25fe69[_0x5e2c7d(0x1f3)]);_0x249c43?(_0x13e9ca[_0x5e2c7d(0x1f9)]['display']=_0x5e2c7d(0x1fb),_0x25fe69[_0x5e2c7d(0x1f4)][_0x5e2c7d(0x1fa)]('is-invalid'),_0x25fe69[_0x5e2c7d(0x1f4)][_0x5e2c7d(0x1ee)](_0x5e2c7d(0x1f5))):(_0x13e9ca[_0x5e2c7d(0x1f9)]['display']='block',_0x25fe69[_0x5e2c7d(0x1f4)]['remove']('is-valid'),_0x25fe69[_0x5e2c7d(0x1f4)][_0x5e2c7d(0x1ee)]('is-invalid')),_0x4ef315();});});function _0x4ef315(){const _0x3cbe8d=_0x1e12b3,_0x411e1a=_0x5a2ef6[_0x3cbe8d(0x1e2)](_0x4dfaff=>{const _0x55dc5f=_0x3cbe8d,_0x2bcdd3=document['getElementById'](_0x4dfaff);return _0x1354a[_0x4dfaff][_0x55dc5f(0x1e5)](_0x2bcdd3[_0x55dc5f(0x1f3)])&&!_0x233c28(_0x2bcdd3[_0x55dc5f(0x1f3)]);});_0x38ac9a[_0x3cbe8d(0x1e0)]('button[type=\x22submit\x22]')[_0x3cbe8d(0x1fe)]=!_0x411e1a;}}));function _0x1601(){const _0x223de1=['addEventListener','21798ySpVpd','getElementById','6AQMuyv','DOMContentLoaded','add','contactForm','nom','981PYmCLi','5496cPIfwJ','value','classList','is-valid','48VUZHlW','email','1055907YqQzIC','style','remove','none','input','5LrEKhH','disabled','Error','8781810FvlVmc','querySelector','sujet','every','5261003elqdId','404ZoXKyK','test','1191832CuWzVW','message','7217189LJYoYn'];_0x1601=function(){return _0x223de1;};return _0x1601();}
+
+</script>
 {% endblock %}

@@ -95,9 +95,9 @@
                     </div>
                     <div class="appointment">
                         <strong>{{ event.time }}</strong><br>
-                        <a href="{{ url_for('main.view_profile', user_id=event.user_id) }}">
+                        <a href="{% if event.user_id %}{{ url_for('main.view_profile', user_id=event.user_id) }}{% else %}#{% endif %}">
                             {{ event.title }}
-                        </a>
+                        </a>                        
                         <button class="delete-button" data-event-id="{{ event.id }}">Annuler</button>
                     </div>
                 </div>

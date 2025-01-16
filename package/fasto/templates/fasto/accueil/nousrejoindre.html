@@ -19,6 +19,7 @@
         <li><a href="{{ url_for('main.notrehistoire') }}">Notre Histoire</a></li>
         <li><a href="{{ url_for('main.partenariat') }}">Partenariat</a></li>
         <li><a href="{{ url_for('main.nousrejoindre') }}">Nous Rejoindre</a></li>
+        <li><a href="{{ url_for('main.discord') }}">Communauté Discord</a></li>
         <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
         <li><a href="{{ url_for('main.page_login') }}" class="btn-secondary"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
         <li><a href="{{ url_for('main.page_register_choice') }}" class="btn-primary"><i class="fas fa-user-plus"></i> Inscription</a></li>
@@ -30,6 +31,11 @@
     <div class="line"></div>
   </header>
 
+  <div class="whatsapp-float">
+    <a href="https://wa.me/+33662483678?text=Bonjour%2C%20je%20souhaite%20avoir%20plus%20d%27informations%20concernant%20vos%20services." target="_blank">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+  </div>
 
     <!-- Cadre rouge avec le message -->
 <div class="alert-message">
@@ -38,12 +44,12 @@
   
 <main>
     <section class="typingCenter">
-        <h1 class="typing">Être labéliser ? </h1>
+        <h1 class="typing">Être labélisé ? </h1>
     </section>
 
     <section class="label-lfp2024">
         <h1 class="title">Pourquoi être labellisé LSSP 2024 ?</h1>
-        <p class="intro">Le label LSSP 2024 : Label Softs Skills Professionnels est un gage de qualité qui valorise votre engagement en tant que formateur, tant sur le plan éthique que déontologique. Il vous permet de vous démarquer dans un marché compétitif en garantissant que vous respectez les plus hauts standards professionnels.</p>
+        <p class="intro">Le label LSSP 2024 : Label Soft Skills Professionnels est un gage de qualité qui valorise votre engagement en tant que formateur, tant sur le plan éthique que déontologique. Il vous permet de vous démarquer dans un marché compétitif en garantissant que vous respectez les plus hauts standards professionnels.</p>
         <div class="benefits-container">
           <div class="benefit">
             <h2>Reconnaissance de votre professionnalisme</h2>
@@ -74,6 +80,16 @@
             <h2>Conclusion</h2>
             <p>Le label LSSP 2024 est un outil essentiel pour prouver votre engagement envers des pratiques déontologiques et éthiques de haute qualité.</p>
           </div>
+        </div>
+      </section>
+      <!-- Section pour le téléchargement du référentiel -->
+      <section class="referentiel-section">
+        <div class="containerRef">
+          <h2>Téléchargez notre Référentiel LSSP 2024</h2>
+          <p>Découvrez les objectifs, compétences, et modalités de labellisation décrits dans notre Référentiel de Compétences. Ce document est essentiel pour comprendre notre processus et nos valeurs.</p>
+          <a href="../../../static/fasto/admnistratif/refLSSP2024.pdf" download="Référentiel_LSSP_2024.pdf" class="btn-download">
+            <i class="fas fa-download"></i> Télécharger le Référentiel
+          </a>
         </div>
       </section>
 
@@ -129,43 +145,42 @@
     </div>
     
       <!-- FOOTER  -->
-  <footer class="footer">
-    <div class="footer-content">
-      <div class="footer-section about">
-        <h2 class="logo-text">Institut de Labélisation</h2>
-        <p id="textfooter">
-          L'Institut est dédié à la labélisation des prestataires externes, assurant des standards de
-          qualité élevés.
-        </p>
-        <div class="contact">
-          <span><i class="fas fa-map-marker-alt"></i> Paris, France</span>
-          <span><i class="fas fa-envelope"></i> contact@institut-labelisation.fr</span>
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-section about">
+            <h2 class="logo-text">Institut de Labélisation Français</h2>
+            <p id="textfooter">
+              L'Institut est dédié à la labélisation des prestataires externes, assurant des standards de
+              qualité élevés.
+            </p>
+            <div class="contact">
+              <span><i class="fas fa-map-marker-alt"></i> 10 rue de Penthièvre 75008 Paris, France</span>
+              <span><i class="fas fa-envelope"></i> contact@institutdelabelisationfrancais.fr</span>
+            </div>
+          </div>
+    
+          <div class="footer-section links">
+            <h3>Liens Utiles</h3>
+            <ul>
+              <li><a href="../../../static/fasto/admnistratif/Institut de Labélisation Français - Politique de confidentialité - 2024-10-21T15_00_25Z.pdf" download="Institut de Labélisation Français - Politique de confidentialité - 2024-10-21T15_00_25Z.pdf">Mentions légales</a></li>
+              <li><a href="../../../static/fasto/admnistratif/CGU - Institut de Labélisation Français - 2024-10-21T14_53_49Z.pdf" download="CGU - Institut de Labélisation Français - 2024-10-21T14_53_49Z.pdf">CGU</a></li>
+              <li><a href="../../../static/fasto/admnistratif/CGV_Institut_Labélisation_Français.pdf" download="CGV_Institut_Labélisation_Français.pdf">CGV</a></li>
+              <li><a href="{{ url_for('main.contact') }}">Contact</a></li>
+            </ul>
+          </div>
+    
+          <div class="footer-section social">
+            <h3>Suivez-nous</h3>
+            <div class="social-icons">
+              <a href="https://www.linkedin.com/company/institut-de-labelisation-fran%C3%A7ais"><i class="fab fa-linkedin"></i></a>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div class="footer-section links">
-        <h3>Liens Utiles</h3>
-        <ul>
-          <li><a href="#">Mentions légales</a></li>
-          <li><a href="#">CGU</a></li>
-          <li><a href="#">Contact</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-section social">
-        <h3>Suivez-nous</h3>
-        <div class="social-icons">
-          <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
-          <a href="#"><i class="fab fa-facebook"></i></a>
+    
+        <div class="footer-bottom">
+          &copy; 2024 Institut de Labélisation Français | Tous droits réservés.
         </div>
-      </div>
-    </div>
-
-    <div class="footer-bottom">
-      &copy; 2024 Institut de Labélisation | Tous droits réservés.
-    </div>
-  </footer>
+      </footer>
 
     
       

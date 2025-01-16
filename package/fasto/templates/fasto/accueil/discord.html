@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-        <link rel="icon" type="image/png" href="../../../static/fasto/images/img/Favicon.png" />
-        <link rel="stylesheet" href="../../../static/fasto/css/styleAccueil.css">
-        <title>Notre Histoire</title>
-        <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
-        <script src="../../../static/fasto/js/script.js" defer></script>
-      </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../../../static/fasto/images/img/Favicon.png" />
+    <link rel="stylesheet" href="../../../static/fasto/css/styleAccueil.css">
+    <title>Adopte des Soft Skills</title>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
+    <script src="../../../static/fasto/js/script.js" defer></script>
+</head>
 <body>
-    <!-- PARTIE HEADER  -->
-  <!-- HEADER SECTION -->
+  <!-- PARTIE HEADER -->
   <header>
     <nav class="navbar">
       <a href="{{ url_for('main.home') }}"><img src="../../../static/fasto/images/img/logo.png" alt="Logo" class="logo"></a>
@@ -38,50 +35,59 @@
       <i class="fab fa-whatsapp"></i>
     </a>
   </div>
- <!-- PARTIE SECTION  -->
-<main>
   
-<section class="typingCenter">
-    <h1 class="typing">Des experts pour vous guider vers l'excellence déontologique</h1>
-</section>
-<section class="timeline-section">
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-content">
-          <h2>Qui sommes-nous ?</h2>
-          <p>Nous sommes trois formateurs venant de parcours professionnels différents, unis par une passion commune pour l'excellence déontologique. En échangeant sur nos expériences, nous avons réalisé l'importance des soft skills pour les prestataires externes en formation. Ces compétences sont essentielles à la réussite d’une mission.</p>
+  <main>
+    <section class="typingCenter">
+        <h1 class="typing">Rejoignez Adopte des Soft Skills</h1>
+    </section>
+
+    <section class="discord-intro">
+        <h1 class="title">Découvrez notre communauté Discord</h1>
+        <p class="intro">Adopte des Soft Skills est une communauté dédiée aux formateurs, formatrices, et prestataires externes pour échanger, s’entraider et grandir ensemble dans un espace bienveillant et collaboratif.</p>
+        <div class="benefits-container">
+          <div class="benefit">
+            <h2>Salons de partage</h2>
+            <p>Discutez dans des salons dédiés aux échanges sur les soft skills, le développement personnel, et les pratiques professionnelles.</p>
+          </div>
+          
+          <div class="benefit">
+            <h2>Ressources exclusives</h2>
+            <p>Accédez à des ressources partagées par notre communauté : guides, outils, astuces et bonnes pratiques.</p>
+          </div>
+      
+          <div class="benefit">
+            <h2>Événements communautaires</h2>
+            <p>Participez à des webinaires, ateliers, et sessions de networking organisés régulièrement pour échanger sur les sujets qui vous passionnent.</p>
+          </div>
+      
+          <div class="benefit">
+            <h2>Salons spécifiques</h2>
+            <ul>
+                <li>💬 Discussions générales</li>
+                <li>📚 Partage de ressources pédagogiques</li>
+                <li>🎓 Conseils pour la formation</li>
+                <li>🤝 Opportunités de collaboration</li>
+            </ul>
+          </div>
+      
+          <div class="benefit">
+            <h2>Rejoignez-nous dès maintenant</h2>
+            <p>Adopte des Soft Skills est l’endroit parfait pour développer votre réseau et améliorer vos pratiques professionnelles dans un cadre éthique et bienveillant.</p>
+            <a href="{{ url_for('main.register_formateur') }}" class="btn-primary">
+              <i class="fas fa-user-plus"></i> Inscrivez-vous
+            </a>
+          </div>
         </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-content">
-          <h2>Comment l'idée est née ?</h2>
-          <p>Nous avons constaté des manquements non seulement dans les soft skills mais aussi dans le respect des bonnes pratiques déontologiques au sein du secteur. C'est ainsi qu'est née notre volonté d'agir.</p>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-content">
-          <h2>Les constats que nous avons faits</h2>
-          <p>Les pratiques déontologiques en formation sont souvent négligées. En tant que formateurs, nous avons observé qu’il était difficile de distinguer les professionnels qui respectent ces règles de ceux qui ne le font pas.</p>
-        </div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-content">
-          <h2>Pourquoi un label ?</h2>
-          <p>Pour combler ce manque, nous avons créé le Label de Softs Skills Professionnels qui met en avant la qualité, l’éthique, et l'engagement des formateurs. Notre label garantit des pratiques exemplaires et différencie les formateurs qui respectent les règles professionnelles de ceux qui ne le font pas.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-  <!-- PARTIE FOOTER -->
+      </section>
+  </main>
   
+  <!-- FOOTER -->
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section about">
         <h2 class="logo-text">Institut de Labélisation Français</h2>
         <p id="textfooter">
-          L'Institut est dédié à la labélisation des prestataires externes, assurant des standards de
-          qualité élevés.
+          L'Institut est dédié à la labélisation des prestataires externes, assurant des standards de qualité élevés.
         </p>
         <div class="contact">
           <span><i class="fas fa-map-marker-alt"></i> 10 rue de Penthièvre 75008 Paris, France</span>
@@ -111,7 +117,4 @@
       &copy; 2024 Institut de Labélisation Français | Tous droits réservés.
     </div>
   </footer>
-  
-
 </body>
-</html>

@@ -1,12 +1,14 @@
+#models.py
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import current_app
 from bson.objectid import ObjectId
 import logging
 from datetime import datetime
+import uuid 
 
 class User(UserMixin):
-    def __init__(self, nom, prenom, email, password, role, secteur=None, competences=None, region_habitation=None, status=None, telephone=None, ecole=None, adresse=None, email_confirmed=False, photo_profil=None, label_obtained_date=None, email_sent=False, unique_code=None, charte_acceptee=False):
+    def __init__(self, nom, prenom, email, password, role, secteur=None, competences=None, region_habitation=None, status=None, telephone=None, ecole=None, adresse=None, email_confirmed=False, photo_profil=None, label_obtained_date=None, email_sent=False, unique_code=None, charte_acceptee=False, is_ambassador=False, affiliated_users=None):
         self.nom = nom
         self.prenom = prenom
         self.secteur = secteur
@@ -25,6 +27,20 @@ class User(UserMixin):
         self.email_sent = email_sent
         self.unique_code = unique_code
         self.charte_acceptee = charte_acceptee  # Correctement assigné ici
+        self.is_ambassador = is_ambassador
+        self.affiliated_users = affiliated_users if affiliated_users else []
+        
+    def promote_to_ambassador(self):
+        """
+        Définir l'utilisateur comme ambassadeur, générer un code d'affiliation unique,
+        et sauvegarder les changements dans la base de données.
+        """
+        self.is_ambassador = True
+        self.role = "ambassadeur"
+        self.unique_code = str(uuid.uuid4())[:8]
+        self.save()
+        logging.debug(f"Promotion de {self.nom} {self.prenom} en ambassadeur avec code {self.unique_code}")
+
 
     def save(self):
         user_data = {
@@ -45,10 +61,32 @@ class User(UserMixin):
             "label_obtained_date": self.label_obtained_date,
             "email_sent": self.email_sent,
             "unique_code": self.unique_code,
-            "charte_acceptee": self.charte_acceptee  # Inclus dans la sauvegarde
+            "charte_acceptee": self.charte_acceptee,  # Inclus dans la sauvegarde
+            "is_ambassador": self.is_ambassador,
+            "affiliated_users": self.affiliated_users
         }
         current_app.db.users.update_one({"email": self.email}, {"$set": user_data}, upsert=True)
         logging.debug(f"Utilisateur sauvegardé : {user_data}")
+        
+    def generate_affiliation_code(self):
+        import uuid
+        self.unique_code = str(uuid.uuid4())[:8]  # Code unique de 8 caractères
+        self.save()
+        return self.unique_code
+
+    def add_affiliated_user(self, user_email):
+        if user_email not in self.affiliated_users:
+            self.affiliated_users.append(user_email)
+            self.save()
+            
+    @staticmethod
+    def get_by_affiliation_code(code):
+        user_data = current_app.db.users.find_one({"unique_code": code, "is_ambassador": True})
+        logging.debug(f"Recherche d'ambassadeur avec code {code}: {user_data}")
+        if user_data:
+            return User.from_db(user_data)
+        return None
+
 
     @staticmethod
     def get_by_email(email):
@@ -111,3 +149,24 @@ class ContactMessage:
             "date_envoye": self.date_envoye,
         }
         current_app.db.contact_messages.insert_one(message_data)
+
+
+class Visit:
+    def __init__(self, url, user_agent, visit_time, duration=0):
+        self.url = url
+        self.user_agent = user_agent
+        self.visit_time = visit_time
+        self.duration = duration
+
+    def save(self):
+        visit_data = {
+            "url": self.url,
+            "user_agent": self.user_agent,
+            "visit_time": self.visit_time,
+            "duration": self.duration
+        }
+        current_app.db.visits.insert_one(visit_data)
+
+    @staticmethod
+    def get_all():
+        return list(current_app.db.visits.find())

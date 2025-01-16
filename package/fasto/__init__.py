@@ -27,7 +27,7 @@ def create_app():
     # Encoder le mot de passe pour l'URL
     encoded_password = urllib.parse.quote_plus(password)
     # MongoDB configuration
-    client = MongoClient('mongodb://localhost:27017/')
+    client = MongoClient('mongodb://192.168.194.107:27017', username='root', password='Z8a34vI2iNtWOi')
     app.db = client['ILF']
 
  # Flask-Mail configuration

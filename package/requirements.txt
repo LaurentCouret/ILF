@@ -18,3 +18,5 @@ bson
 APScheduler
 fpdf
 Pillow
+pytz
+gunicorn==23.0.0
